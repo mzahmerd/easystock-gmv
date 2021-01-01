@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 
 import "./App.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -10,8 +11,10 @@ import Purchase from "./pages/Purchase";
 import Customers from "./pages/Customers";
 import Sellers from "./pages/Sellers";
 import Users from "./pages/Users";
+import Invoice from "./pages/Invoice";
 
 import DB from "./db";
+import Login from "./pages/Login";
 
 class App extends Component {
   constructor(props) {
@@ -33,6 +36,8 @@ class App extends Component {
       purchase: {},
       sales: {},
       users: {},
+      isLogin: true,
+      isAdmin: false,
     };
   }
   loadData = async () => {
@@ -69,6 +74,7 @@ class App extends Component {
         [id]: store,
       },
     });
+    this.loadData();
   };
   changeStore = async (store) => {
     await this.setState({
@@ -87,6 +93,7 @@ class App extends Component {
         [id]: customer,
       },
     });
+    this.loadData();
   };
   addSeller = async (seller) => {
     const { id } = await this.db.addSeller(seller);
@@ -98,6 +105,19 @@ class App extends Component {
         [id]: seller,
       },
     });
+    this.loadData();
+  };
+  addUser = async (user) => {
+    const { id } = await this.db.addUser(user);
+    const { users } = this.state;
+    user._id = id;
+    this.setState({
+      users: {
+        ...users,
+        [id]: user,
+      },
+    });
+    this.loadData();
   };
   addProduct = async (product) => {
     const { id } = await this.db.addProduct(product, this.state.selectedStore);
@@ -109,6 +129,7 @@ class App extends Component {
         [id]: product,
       },
     });
+    this.loadData();
   };
   updateProduct = async (product) => {
     const newProduct = await this.db.updateProduct(product);
@@ -120,6 +141,7 @@ class App extends Component {
         [product._id]: newProduct,
       },
     });
+    this.loadData();
   };
   getSalesByDate = async (from, to) => {
     const sales = await this.db.getSalesByDate(from.getTime(), to.getTime());
@@ -143,9 +165,12 @@ class App extends Component {
   };
   makePurchase = async (bill) => {
     await this.db.makePurchase(bill);
+    this.loadData();
     // console.log(products);
   };
   makeSales = async (bill) => {
+    // this.printInvoice(1343566);
+    // return;
     await this.db.makeSales(bill);
     this.loadData();
     // console.log(products);
@@ -154,13 +179,45 @@ class App extends Component {
     console.log("item" + this.state.products[0]);
     return this.state.products[0];
   };
-
+  printInvoice = (saleId) => {
+    ReactDOM.render(
+      <Invoice saleId={saleId} />,
+      document.getElementById("invoice")
+    );
+  };
+  login = async (user) => {
+    await this.db.login(user);
+    // return;
+    // if (await this.db.login(user)) {
+    //   this.loadData();
+    // }
+  };
+  renderPage = () => {
+    if (this.state.isLogin) {
+      return (
+        <Router>
+          <Navbar
+            stores={Object.values(this.state.stores)}
+            selectedStore={this.state.selectedStore}
+            changeStore={this.changeStore}
+          />
+          <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
+        </Router>
+      );
+    }
+    return <Login users={this.state.users} login={this.login} />;
+  };
   renderContent = () => {
     if (this.state.loading) {
       return;
     }
     return (
       <Switch>
+        {/* <Route
+          path="/"
+          exact
+          component={(props) => <Login {...props} users={this.state.users} />}
+        /> */}
         <Route
           path="/"
           exact
@@ -234,7 +291,12 @@ class App extends Component {
             />
           )}
         />
-        <Route path="/Users" component={Users} />
+        <Route
+          path="/Users"
+          component={(props) => (
+            <Users {...props} users={this.state.users} addUser={this.addUser} />
+          )}
+        />
         <Route
           path="/Report/:productId"
           component={(props) => (
@@ -244,30 +306,20 @@ class App extends Component {
             />
           )}
         />
+        <Route
+          path="/Invoice"
+          exact
+          component={(props) => <Invoice {...props} salesId={123345657765} />}
+        />
       </Switch>
     );
   };
   render() {
-    return (
-      <>
-        <Router>
-          {/* {(props) => (
-            <Navbar
-              {...props}
-              stores={this.state.stores}
-              addStore={this.addStore}
-              changeStore={this.changeStore}
-            />
-          )} */}
-          <Navbar
-            stores={Object.values(this.state.stores)}
-            selectedStore={this.state.selectedStore}
-            changeStore={this.changeStore}
-          />
-          <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
-        </Router>
-      </>
-    );
+    // localStorage.setItem("isLogin", null);
+    localStorage.setItem("isAdmin", false);
+    localStorage.setItem("username", "admin");
+
+    return <>{this.renderPage()}</>;
   }
 }
 

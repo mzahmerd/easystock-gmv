@@ -1,19 +1,6 @@
-import React, { useState, Component } from "react";
-import {
-  Modal,
-  Button,
-  Form,
-  Table,
-  Container,
-  Row,
-  Col,
-  InputGroup,
-  FormControl,
-  Card,
-} from "react-bootstrap";
+import React, { Component } from "react";
+import { Button, Form, Container, Row } from "react-bootstrap";
 import ProductTable from "../components/ProductTable";
-import { Link } from "react-router-dom";
-import DB from "../db";
 // const [state, setstate] = useState(true);
 
 class Store extends Component {
@@ -81,12 +68,11 @@ class Store extends Component {
       store: evt.target.value,
     });
   };
-  filterProduct = (e) => {
+  filterProduct = () => {
     // window.location.href = "/" + e.target.value;
   };
   render() {
     const products = Object.values(this.props.products);
-    const { stores } = this.props;
     const headers = ["Name", "Quantity", "Rate", "Total", "Price", "Total"];
     // console.log(products);
     return (

@@ -6,6 +6,12 @@ import * as BsIcons from "react-icons/bs";
 import * as IoIcons from "react-icons/io";
 
 export const SidebarData = [
+  // {
+  //   title: "Login",
+  //   path: "/",
+  //   icon: <FaIcons.FaStore />,
+  //   cName: "nav-text",
+  // },
   {
     title: "Store",
     path: "/",

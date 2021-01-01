@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { Button, Form, Container, Row } from "react-bootstrap";
-import UserTable from "../components/UserTable";
 
-export default class Users extends Component {
+export default class Login extends Component {
   state = {
     users: this.props.users,
     user: {
@@ -20,12 +19,10 @@ export default class Users extends Component {
       },
     });
   };
-  handleAddUser = () => {
-    this.props.addUser(this.state.user);
+  handleLogin = () => {
+    this.props.login(this.state.user);
   };
   render() {
-    this.headers = ["Username", "Password"];
-    console.log(this.state.users);
     return (
       <>
         <Container>
@@ -53,16 +50,12 @@ export default class Users extends Component {
             />
             <Button
               variant="primary"
-              onClick={this.handleAddUser}
+              onClick={this.handleLogin}
               className="mb-2"
             >
-              Add
+              Login
             </Button>
           </Form>
-          <UserTable
-            headers={this.headers}
-            tableData={Object.values(this.props.users)}
-          ></UserTable>
         </Container>
       </>
     );
