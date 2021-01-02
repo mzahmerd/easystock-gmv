@@ -3496,3 +3496,5 @@
 [Fri, 01 Jan 2021 11:49:02 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_replicator?_=1609497350207 200
 [Fri, 01 Jan 2021 11:49:02 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /gmv?_=1609497350209 200
 [Fri, 01 Jan 2021 11:49:02 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_users?_=1609497350208 200
+[Sat, 02 Jan 2021 22:30:18 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
+[Sat, 02 Jan 2021 22:30:18 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.

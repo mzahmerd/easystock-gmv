@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
-import { SidebarData } from "./SidebarData";
+import { getSidebarData } from "./SidebarData";
 import "./Nabvar.css";
 import { IconContext } from "react-icons";
-import StoreModal from "./storeModal";
 import { Button, Modal, Form } from "react-bootstrap";
 
 function Navbar(props) {
@@ -23,6 +22,10 @@ function Navbar(props) {
     // console.log(store);
     props.changeStore(store);
     handleClose();
+  };
+  const logout = () => {
+    localStorage.clear();
+    props.logout();
   };
   return (
     <>
@@ -75,7 +78,7 @@ function Navbar(props) {
                 <AiIcons.AiOutlineClose />
               </Link>
             </li>
-            {SidebarData.map((item, index) => {
+            {getSidebarData(props.isAdmin).map((item, index) => {
               return (
                 <li key={index} className={item.cName}>
                   <Link to={item.path}>
@@ -85,6 +88,12 @@ function Navbar(props) {
                 </li>
               );
             })}
+            <li key="logout" className="Logout">
+              <Link to="/" onClick={logout} className="float-right mr-4">
+                <AiIcons.AiOutlineLogout />
+                <span>Logout</span>
+              </Link>
+            </li>
           </ul>
         </nav>
       </IconContext.Provider>

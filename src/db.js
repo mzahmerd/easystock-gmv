@@ -191,30 +191,29 @@ export default class DB {
     });
     return res;
   };
+
   login = async (user) => {
     console.log(user);
     // let db = this.db;
-    this.db
-      .createIndex({
-        index: { fields: ["type", "username", "password"] },
+    await this.db;
+    // .createIndex({
+    //   index: { fields: ["type", "username", "password"] },
+    // })
+    // .catch((err) => console.log(err));
+    await this.db
+      .find({
+        selector: {
+          type: "users",
+          username: user.username,
+          password: user.password,
+        },
+        // sort: ["createdAt"],
       })
       .then((res) => {
+        // return res;
         console.log(res);
-
-        this.db
-          .find({
-            selector: {
-              type: "users",
-              username: user.username,
-              password: user.password,
-            },
-            // sort: ["createdAt"],
-          })
-          .then((res) => {
-            // return res;
-            console.log(res);
-          });
-      });
+      })
+      .catch((err) => console.log(err));
   };
   addProduct = async (product, store) => {
     // console.log(product);

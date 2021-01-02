@@ -15,6 +15,7 @@ import Invoice from "./pages/Invoice";
 
 import DB from "./db";
 import Login from "./pages/Login";
+import { Alert } from "react-bootstrap";
 
 class App extends Component {
   constructor(props) {
@@ -36,8 +37,9 @@ class App extends Component {
       purchase: {},
       sales: {},
       users: {},
-      isLogin: true,
-      isAdmin: false,
+      isLogin: localStorage.getItem("isLogin"),
+      username: localStorage.getItem("username"),
+      isAdmin: this.toBool(localStorage.getItem("isAdmin")),
     };
   }
   loadData = async () => {
@@ -185,18 +187,50 @@ class App extends Component {
       document.getElementById("invoice")
     );
   };
+  logout = () => {
+    this.setState({
+      isLogin: false,
+    });
+  };
+  toBool = (s) => {
+    return s === "true" ? true : false;
+  };
   login = async (user) => {
-    await this.db.login(user);
+    // await this.db.login(user);
     // return;
     // if (await this.db.login(user)) {
     //   this.loadData();
     // }
+    let exist = this.state.users[`users:${user.username}`];
+    console.log(exist);
+    if (exist) {
+      if (exist.password === user.password) {
+        localStorage.setItem("isAdmin", !!exist.isAdmin);
+        localStorage.setItem("username", exist.username);
+        localStorage.setItem("isLogin", true);
+
+        this.setState({
+          isLogin: true,
+          isAdmin: exist.isAdmin,
+          username: exist.username,
+        });
+      } else {
+        alert("password incorrect!");
+      }
+    } else {
+      alert("user not registered!");
+    }
   };
   renderPage = () => {
     if (this.state.isLogin) {
+      // this.setState({
+      //   isAdmin: this.isAdmin(localStorage.getItem("username")),
+      // });
       return (
         <Router>
           <Navbar
+            isAdmin={this.state.isAdmin}
+            logout={this.logout}
             stores={Object.values(this.state.stores)}
             selectedStore={this.state.selectedStore}
             changeStore={this.changeStore}
@@ -211,13 +245,78 @@ class App extends Component {
     if (this.state.loading) {
       return;
     }
+    // if (!this.state.isAdmin) {
+    //   return (
+    //     <Switch>
+    //       <Route
+    //         path="/"
+    //         exact
+    //         component={(props) => (
+    //           <Store
+    //             {...props}
+    //             products={this.state.products}
+    //             // stores={Object.values(this.state.stores)}
+    //             addStore={this.addStore}
+    //             addProduct={this.addProduct}
+    //           />
+    //         )}
+    //       />
+    //       <Route
+    //         path="/Sales"
+    //         exact
+    //         component={(props) => (
+    //           <Sales
+    //             {...props}
+    //             customers={this.state.customers}
+    //             stores={this.stores}
+    //             products={this.state.products}
+    //             makeSales={this.makeSales}
+    //           />
+    //         )}
+    //       />
+    //       <Route
+    //         path="/Customers"
+    //         component={(props) => (
+    //           <Customers
+    //             {...props}
+    //             customers={this.state.customers}
+    //             addCustomer={this.addCustomer}
+    //           />
+    //         )}
+    //       />
+    //       <Route
+    //         path="/Report"
+    //         component={(props) => (
+    //           <Report
+    //             {...props}
+    //             sellers={this.state.sellers}
+    //             customers={this.state.customers}
+    //             sales={this.state.sales}
+    //             purchase={this.state.purchase}
+    //             getCustomerOrders={this.getCustomerOrders}
+    //             getSalesByDate={this.getSalesByDate}
+    //           />
+    //         )}
+    //       />
+    //       <Route
+    //         path="/Report/:productId"
+    //         component={(props) => (
+    //           <Report
+    //             {...props}
+    //             products={this.state.products[props.match.params.productId]}
+    //           />
+    //         )}
+    //       />
+    //       <Route
+    //         path="/Invoice"
+    //         exact
+    //         component={(props) => <Invoice {...props} salesId={123345657765} />}
+    //       />
+    //     </Switch>
+    //   );
+    // }
     return (
       <Switch>
-        {/* <Route
-          path="/"
-          exact
-          component={(props) => <Login {...props} users={this.state.users} />}
-        /> */}
         <Route
           path="/"
           exact
@@ -316,10 +415,22 @@ class App extends Component {
   };
   render() {
     // localStorage.setItem("isLogin", null);
-    localStorage.setItem("isAdmin", false);
-    localStorage.setItem("username", "admin");
+    // localStorage.setItem("isAdmin", false);
+    // localStorage.setItem("username", "admin");
 
-    return <>{this.renderPage()}</>;
+    return (
+      <>
+        {this.renderPage()}
+        {/* <Router>
+          <Navbar
+            stores={Object.values(this.state.stores)}
+            selectedStore={this.state.selectedStore}
+            changeStore={this.changeStore}
+          />
+          <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
+        </Router> */}
+      </>
+    );
   }
 }
 

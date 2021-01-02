@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Form, Container, Row } from "react-bootstrap";
+import { Button, Form, Container } from "react-bootstrap";
 
 export default class Login extends Component {
   state = {
@@ -25,9 +25,9 @@ export default class Login extends Component {
   render() {
     return (
       <>
-        <Container>
-          <Row style={{ margin: 20 + "px" }}></Row>
-          <Form inline>
+        <Container className="align-center">
+          {/* <Row style={{ margin: 10 + "%" }}></Row> */}
+          <Form inline style={{ margin: 30 + "%" }}>
             <Form.Label htmlFor="user_name" srOnly>
               User Name
             </Form.Label>
