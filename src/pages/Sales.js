@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import SalesTable from "../components/SalesTable";
+import { formatMoney } from "../util";
 
 export default class Sales extends Component {
   state = {
@@ -88,6 +89,7 @@ export default class Sales extends Component {
   handleMakeSales = () => {
     const bill = {
       createdAt: Date.now(),
+      user: localStorage.getItem("username"),
       customer: this.state.customer,
       // store: this.state.store,
       total: this.state.total,
@@ -144,7 +146,7 @@ export default class Sales extends Component {
                   className="mb-2 mr-sm-2"
                   id="in_store"
                   placeholder="In-Store"
-                  value={this.state.inStore}
+                  value={formatMoney(this.state.inStore)}
                   onChange={this.updateProduct}
                 />
                 <Form.Label htmlFor="price" srOnly>
@@ -194,7 +196,7 @@ export default class Sales extends Component {
                         className="mb-2 mr-sm-2"
                         id="credit"
                         name="credit"
-                        value={this.state.credit}
+                        value={formatMoney(this.state.credit)}
                         placeholder="Credit"
                         readOnly={true}
                       />

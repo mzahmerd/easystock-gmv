@@ -1,6 +1,6 @@
 import PouchDB from "pouchdb";
 import PouchDBFind from "pouchdb-find";
-import Store from "./pages/Store";
+// import Store from "./pages/Store";
 
 PouchDB.plugin(PouchDBFind); // install the pouchdb-find plugin
 // const localDB = new PouchDB("easystock_gmv");
@@ -18,7 +18,16 @@ export default class DB {
         // this.db = new PouchDB(Credentials.default.remote_url);
 
         this.remoteDB = new PouchDB(Credentials.default.remote_url + name);
-        this.db.sync(this.remoteDB);
+        this.db
+          .sync(this.remoteDB, {
+            live: true,
+          })
+          .on("change", function (change) {
+            // yo, something changed!
+          })
+          .on("error", function (err) {
+            // yo, we got an error! (maybe the user went offline?)
+          });
       }
     } catch (ex) {
       console.log("secret.js file missing; disabling remote sync.");
@@ -53,11 +62,12 @@ export default class DB {
         console.log(err);
         // ouch, an error
       });
-    // console.log(stores);
-    if (!stores.lenght) {
-      // await this.addStore("main").then((res) => {
-      // this.getStores();
-      // });
+    // console.log(stores.length);
+    if (!stores.length) {
+      await this.addStore("main").then(async (res) => {
+        // console.log(res);
+        await this.getStores().then((s) => (stores = s));
+      });
     }
 
     // allStores.rows.forEach((store) => {
@@ -73,12 +83,13 @@ export default class DB {
       _id: `stores:${Date.now()}`,
       type: "store",
     });
+
     return res;
   };
 
   //#endregion
 
-  getAllProducts = async (store = "main") => {
+  getAllProducts = async (store) => {
     // console.log(store);
     let allProducts = await this.db.allDocs({
       startkey: "products",
@@ -93,19 +104,18 @@ export default class DB {
     let products = {};
 
     allProducts.rows.forEach((row) => {
-      console.log(row);
+      // console.log(row);
       if (row.doc.type === "product" && row.doc.store === store)
         products[row.id] = row.doc;
     });
     return products;
   };
 
-  getAllDocs = async (store = "main") => {
+  getAllDocs = async (store) => {
     let allDocs = await this.db.allDocs({
       include_docs: true,
       // endkey: store,
     });
-
     // let allProducts = await this.db.find({
     //   selector: { type: "product" },
     // });
@@ -172,6 +182,39 @@ export default class DB {
     });
     return res;
   };
+  addUser = async (user) => {
+    // console.log(product);
+    const res = await this.db.put({
+      ...user,
+      _id: `users:${user.username}`,
+      type: "user",
+    });
+    return res;
+  };
+
+  login = async (user) => {
+    console.log(user);
+    // let db = this.db;
+    await this.db;
+    // .createIndex({
+    //   index: { fields: ["type", "username", "password"] },
+    // })
+    // .catch((err) => console.log(err));
+    await this.db
+      .find({
+        selector: {
+          type: "users",
+          username: user.username,
+          password: user.password,
+        },
+        // sort: ["createdAt"],
+      })
+      .then((res) => {
+        // return res;
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
   addProduct = async (product, store) => {
     // console.log(product);
     const res = await this.db.put({
@@ -230,7 +273,7 @@ export default class DB {
         },
       ])
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         products.forEach((p) => {
           // console.log(p);
           this.db
