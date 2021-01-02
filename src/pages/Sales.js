@@ -89,6 +89,7 @@ export default class Sales extends Component {
   handleMakeSales = () => {
     const bill = {
       createdAt: Date.now(),
+      user: localStorage.getItem("username"),
       customer: this.state.customer,
       // store: this.state.store,
       total: this.state.total,
