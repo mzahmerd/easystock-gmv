@@ -8,6 +8,8 @@ export default class Login extends Component {
       username: "",
       password: "",
     },
+    passcode: "",
+    newUser: false,
   };
 
   updateUser = (evt) => {
@@ -19,8 +21,39 @@ export default class Login extends Component {
       },
     });
   };
+  updateCode = (evt) => {
+    this.setState({
+      passcode: evt.target.value,
+    });
+  };
   handleLogin = () => {
     this.props.login(this.state.user);
+  };
+  handleRegister = () => {
+    this.props.register(this.state.user, this.state.passcode);
+  };
+  handleNewUser = () => {
+    this.setState({
+      newUser: !this.state.newUser,
+    });
+  };
+  CodeField = () => {
+    if (this.state.newUser) {
+      return (
+        <>
+          <Form.Label htmlFor="passcode" srOnly>
+            Passcode
+          </Form.Label>
+          <Form.Control
+            className="mb-2 mr-sm-2"
+            id="passcode"
+            placeholder="Passcode"
+            name="passcode"
+            onChange={this.updateCode}
+          />
+        </>
+      );
+    }
   };
   render() {
     return (
@@ -39,7 +72,7 @@ export default class Login extends Component {
               onChange={this.updateUser}
             />
             <Form.Label htmlFor="password" srOnly>
-              Phone Number
+              Password
             </Form.Label>
             <Form.Control
               className="mb-2 mr-sm-2"
@@ -48,12 +81,16 @@ export default class Login extends Component {
               name="password"
               onChange={this.updateUser}
             />
+            {this.CodeField()}
+            <Form.Check label="new user" onChange={this.handleNewUser} />
             <Button
               variant="primary"
-              onClick={this.handleLogin}
+              onClick={
+                this.state.newUser ? this.handleRegister : this.handleLogin
+              }
               className="mb-2"
             >
-              Login
+              {this.state.newUser ? "Register" : "Login"}
             </Button>
           </Form>
         </Container>

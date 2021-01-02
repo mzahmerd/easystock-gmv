@@ -191,9 +191,18 @@ export default class DB {
     });
     return res;
   };
+  register = async (user) => {
+    // console.log(product);
+    const res = await this.db.put({
+      ...user,
+      _id: `users:${user.username}`,
+      type: "user",
+      isAdmin: true,
+    });
+    return res;
+  };
 
   login = async (user) => {
-    console.log(user);
     // let db = this.db;
     await this.db;
     // .createIndex({
@@ -211,7 +220,6 @@ export default class DB {
       })
       .then((res) => {
         // return res;
-        console.log(res);
       })
       .catch((err) => console.log(err));
   };

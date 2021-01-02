@@ -79,38 +79,40 @@ class Store extends Component {
       <>
         <Container>
           <Row style={{ margin: 20 + "px" }}></Row>
-          <Form inline>
-            <Form.Label htmlFor="inlineFormInputGroupUsername2" srOnly>
-              Store Name
-            </Form.Label>
-            <Form.Control
-              className="mb-2 mr-sm-2"
-              id="inlineFormInputName2"
-              // name="store"
-              value={this.state.store}
-              placeholder="Store name"
-              onChange={this.setStoreName}
-            />
-            <Button onClick={this.handleAddStore} className="mb-2">
-              Add Store
-            </Button>
+          {this.props.isAdmin ? (
+            <Form inline>
+              <Form.Label htmlFor="inlineFormInputGroupUsername2" srOnly>
+                Store Name
+              </Form.Label>
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="inlineFormInputName2"
+                // name="store"
+                value={this.state.store}
+                placeholder="Store name"
+                onChange={this.setStoreName}
+              />
+              <Button onClick={this.handleAddStore} className="mb-2">
+                Add Store
+              </Button>
 
-            <Form.Label htmlFor="product_name" srOnly>
-              Product Name
-            </Form.Label>
+              <Form.Label htmlFor="product_name" srOnly>
+                Product Name
+              </Form.Label>
 
-            <Form.Control
-              className=" align-content-end mb-2 mr-sm-2"
-              id="product_name"
-              value={this.state.product.name}
-              name="name"
-              onChange={this.updateProductDetals}
-              placeholder="product name"
-            />
-            <Button onClick={this.handleAdd} className="mb-2">
-              Add Product
-            </Button>
-          </Form>
+              <Form.Control
+                className=" align-content-end mb-2 mr-sm-2"
+                id="product_name"
+                value={this.state.product.name}
+                name="name"
+                onChange={this.updateProductDetals}
+                placeholder="product name"
+              />
+              <Button onClick={this.handleAdd} className="mb-2">
+                Add Product
+              </Button>
+            </Form>
+          ) : null}
           <ProductTable headers={headers} tableData={products}></ProductTable>
         </Container>
       </>

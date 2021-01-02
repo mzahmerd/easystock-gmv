@@ -195,6 +195,25 @@ class App extends Component {
   toBool = (s) => {
     return s === "true" ? true : false;
   };
+  register = async (user, code) => {
+    if (code === "4g6m8v") {
+      let res = await this.db.register(user, code);
+      if (res.ok) {
+        alert("user registered!");
+        localStorage.setItem("isAdmin", true);
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("isLogin", true);
+
+        this.setState({
+          isLogin: true,
+          isAdmin: true,
+          username: user.username,
+        });
+      }
+    } else {
+      alert("Code incorrect contact Administrator");
+    }
+  };
   login = async (user) => {
     // await this.db.login(user);
     // return;
@@ -202,7 +221,6 @@ class App extends Component {
     //   this.loadData();
     // }
     let exist = this.state.users[`users:${user.username}`];
-    console.log(exist);
     if (exist) {
       if (exist.password === user.password) {
         localStorage.setItem("isAdmin", !!exist.isAdmin);
@@ -239,82 +257,19 @@ class App extends Component {
         </Router>
       );
     }
-    return <Login users={this.state.users} login={this.login} />;
+    return (
+      <Login
+        users={this.state.users}
+        login={this.login}
+        register={this.register}
+      />
+    );
   };
   renderContent = () => {
     if (this.state.loading) {
       return;
     }
-    // if (!this.state.isAdmin) {
-    //   return (
-    //     <Switch>
-    //       <Route
-    //         path="/"
-    //         exact
-    //         component={(props) => (
-    //           <Store
-    //             {...props}
-    //             products={this.state.products}
-    //             // stores={Object.values(this.state.stores)}
-    //             addStore={this.addStore}
-    //             addProduct={this.addProduct}
-    //           />
-    //         )}
-    //       />
-    //       <Route
-    //         path="/Sales"
-    //         exact
-    //         component={(props) => (
-    //           <Sales
-    //             {...props}
-    //             customers={this.state.customers}
-    //             stores={this.stores}
-    //             products={this.state.products}
-    //             makeSales={this.makeSales}
-    //           />
-    //         )}
-    //       />
-    //       <Route
-    //         path="/Customers"
-    //         component={(props) => (
-    //           <Customers
-    //             {...props}
-    //             customers={this.state.customers}
-    //             addCustomer={this.addCustomer}
-    //           />
-    //         )}
-    //       />
-    //       <Route
-    //         path="/Report"
-    //         component={(props) => (
-    //           <Report
-    //             {...props}
-    //             sellers={this.state.sellers}
-    //             customers={this.state.customers}
-    //             sales={this.state.sales}
-    //             purchase={this.state.purchase}
-    //             getCustomerOrders={this.getCustomerOrders}
-    //             getSalesByDate={this.getSalesByDate}
-    //           />
-    //         )}
-    //       />
-    //       <Route
-    //         path="/Report/:productId"
-    //         component={(props) => (
-    //           <Report
-    //             {...props}
-    //             products={this.state.products[props.match.params.productId]}
-    //           />
-    //         )}
-    //       />
-    //       <Route
-    //         path="/Invoice"
-    //         exact
-    //         component={(props) => <Invoice {...props} salesId={123345657765} />}
-    //       />
-    //     </Switch>
-    //   );
-    // }
+
     return (
       <Switch>
         <Route
@@ -327,6 +282,7 @@ class App extends Component {
               // stores={Object.values(this.state.stores)}
               addStore={this.addStore}
               addProduct={this.addProduct}
+              isAdmin={this.state.isAdmin}
             />
           )}
         />
@@ -340,6 +296,7 @@ class App extends Component {
               stores={this.stores}
               products={this.state.products}
               makeSales={this.makeSales}
+              isAdmin={this.state.isAdmin}
             />
           )}
         />
@@ -387,6 +344,7 @@ class App extends Component {
               purchase={this.state.purchase}
               getCustomerOrders={this.getCustomerOrders}
               getSalesByDate={this.getSalesByDate}
+              isAdmin={this.state.isAdmin}
             />
           )}
         />
