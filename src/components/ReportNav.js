@@ -24,25 +24,7 @@ function ReportNav(props) {
     <>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div className="report-nav">
-          {/* <Link to="#" className="menu-bars">
-            <FaIcons.FaBars onClick={showSidebar} />
-          </Link> */}
-          {/* <h2 style={{ color: "white" }}>{props.selectedStore}</h2> */}
-
-          {/* <Link to="#" className="store-bars">
-            <FaIcons.FaStore onClick={handleShow} />
-          </Link>
-          <Link to="#" className="store-bars">
-            <FaIcons.FaStore onClick={handleShow} />
-          </Link>
-          <Link to="#" className="store-bars">
-            <FaIcons.FaStore onClick={handleShow} />
-          </Link>
-          <Link to="#" className="store-bars">
-            <FaIcons.FaStore onClick={handleShow} />
-          </Link>
-        </div> */}
-          {ReportNavData.map((item, index) => {
+          {ReportNavData(props.isAdmin).map((item, index) => {
             return (
               <li key={index} className={item.cName}>
                 <Link onClick={handleSwitch} to={item.path}>
