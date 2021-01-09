@@ -31,6 +31,7 @@ class App extends Component {
       loading: true,
       selectedStore: "main",
       stores: {},
+      store: {},
       products: {},
       customers: {},
       sellers: {},
@@ -45,7 +46,7 @@ class App extends Component {
   loadData = async () => {
     const stores = await this.db.getStores();
     const {
-      products,
+      store,
       sellers,
       customers,
       purchase,
@@ -54,7 +55,8 @@ class App extends Component {
     } = await this.db.getAllDocs(this.state.selectedStore);
     this.setState({
       stores: stores,
-      products: products,
+      store: store,
+      // products: store.products,
       customers: customers,
       sellers: sellers,
       purchase: purchase,
@@ -123,11 +125,11 @@ class App extends Component {
   };
   addProduct = async (product) => {
     const { id } = await this.db.addProduct(product, this.state.selectedStore);
-    const { products } = this.state;
+    const { store } = this.state;
 
     this.setState({
-      products: {
-        ...products,
+      store: {
+        ...store,
         [id]: product,
       },
     });
@@ -135,11 +137,11 @@ class App extends Component {
   };
   updateProduct = async (product) => {
     const newProduct = await this.db.updateProduct(product);
-    const { products } = this.state;
+    const { store } = this.state;
 
     this.setState({
-      products: {
-        ...products,
+      store: {
+        ...store,
         [product._id]: newProduct,
       },
     });
@@ -168,18 +170,18 @@ class App extends Component {
   makePurchase = async (bill) => {
     await this.db.makePurchase(bill);
     this.loadData();
-    // console.log(products);
+    // console.log(store);
   };
   makeSales = async (bill) => {
     // this.printInvoice(1343566);
     // return;
     await this.db.makeSales(bill);
     this.loadData();
-    // console.log(products);
+    // console.log(store);
   };
   storeProducts = (store) => {
-    console.log("item" + this.state.products[0]);
-    return this.state.products[0];
+    console.log("item" + this.state.store[0]);
+    return this.state.store[0];
   };
   printInvoice = (saleId) => {
     ReactDOM.render(
@@ -194,6 +196,26 @@ class App extends Component {
   };
   toBool = (s) => {
     return s === "true" ? true : false;
+  };
+  addDeposit = async (cash, transfer, customer) => {
+    const res = await this.db.addDeposit(
+      parseInt(cash),
+      parseInt(transfer),
+      customer
+    );
+    // console.log(res);
+    this.loadData();
+    // console.log(parseInt(cash) + parseInt(transfer), customer);
+  };
+  addWithdrawal = async (cash, transfer, seller) => {
+    const res = await this.db.addWithdrawal(
+      parseInt(cash),
+      parseInt(transfer),
+      seller
+    );
+    // console.log(res);
+    this.loadData();
+    // console.log(parseInt(cash) + parseInt(transfer), customer);
   };
   register = async (user, code) => {
     if (code === "4g6m8v") {
@@ -278,7 +300,7 @@ class App extends Component {
           component={(props) => (
             <Store
               {...props}
-              products={this.state.products}
+              store={this.state.store}
               // stores={Object.values(this.state.stores)}
               addStore={this.addStore}
               addProduct={this.addProduct}
@@ -294,7 +316,7 @@ class App extends Component {
               {...props}
               customers={this.state.customers}
               stores={this.stores}
-              products={this.state.products}
+              store={this.state.store}
               makeSales={this.makeSales}
               isAdmin={this.state.isAdmin}
             />
@@ -308,7 +330,7 @@ class App extends Component {
               {...props}
               sellers={this.state.sellers}
               stores={this.stores}
-              products={this.state.products}
+              products={this.state.store.products}
               makePurchase={this.makePurchase}
             />
           )}
@@ -320,6 +342,7 @@ class App extends Component {
               {...props}
               customers={this.state.customers}
               addCustomer={this.addCustomer}
+              addDeposit={this.addDeposit}
             />
           )}
         />
@@ -330,6 +353,7 @@ class App extends Component {
               {...props}
               sellers={this.state.sellers}
               addSeller={this.addSeller}
+              addWithdrawal={this.addWithdrawal}
             />
           )}
         />
@@ -359,7 +383,7 @@ class App extends Component {
           component={(props) => (
             <Report
               {...props}
-              products={this.state.products[props.match.params.productId]}
+              store={this.state.store[props.match.params.productId]}
             />
           )}
         />

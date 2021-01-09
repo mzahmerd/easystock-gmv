@@ -1,7 +1,11 @@
 import React from "react";
 import { Table } from "react-bootstrap";
+import { BsTrash } from "react-icons/bs";
 
 function SalesTable(props) {
+  const removeItem = (evt) => {
+    props.removeItem(props.tableData[evt.target.id]._id);
+  };
   return (
     <Table responsive>
       <thead>
@@ -18,6 +22,9 @@ function SalesTable(props) {
             <td>{rows.qty}</td>
             <td>{rows.price}</td>
             <td>{rows.price * rows.qty}</td>
+            <td>
+              <BsTrash color="red" size={20} id={id} onClick={removeItem} />
+            </td>
           </tr>
         ))}
       </tbody>

@@ -89,14 +89,17 @@ export default class DB {
 
   //#endregion
 
-  getAllProducts = async (store) => {
+  getAllProducts = async (storename) => {
     // console.log(store);
     let allProducts = await this.db.allDocs({
       startkey: "products",
       include_docs: true,
       // endkey: store,
     });
-
+    let store = {
+      totalRate: 0,
+      totalAmount: 0,
+    };
     // let allProducts = await this.db.find({
     //   selector: { type: "product" },
     // });
@@ -105,13 +108,17 @@ export default class DB {
 
     allProducts.rows.forEach((row) => {
       // console.log(row);
-      if (row.doc.type === "product" && row.doc.store === store)
+      if (row.doc.type === "product" && row.doc.store === storename) {
         products[row.id] = row.doc;
+        store.totalRate += row.doc.rate * row.doc.qty;
+        store.totalAmount += row.doc.price * row.doc.qty;
+      }
     });
-    return products;
+    store.products = products;
+    return store;
   };
 
-  getAllDocs = async (store) => {
+  getAllDocs = async (storename) => {
     let allDocs = await this.db.allDocs({
       include_docs: true,
       // endkey: store,
@@ -123,6 +130,10 @@ export default class DB {
     let sellers = {};
     let customers = {};
     let products = {};
+    let store = {
+      totalRate: 0,
+      totalAmount: 0,
+    };
     let purchase = {};
     let sales = {
       total: 0,
@@ -141,8 +152,10 @@ export default class DB {
         customers[row.id] = row.doc;
         return;
       }
-      if (row.doc.type === "product" && row.doc.store === store) {
+      if (row.doc.type === "product" && row.doc.store === storename) {
         products[row.id] = row.doc;
+        store.totalRate += row.doc.rate * row.doc.qty;
+        store.totalAmount += row.doc.price * row.doc.qty;
         return;
       }
       if (row.doc.type === "purchase") {
@@ -161,8 +174,9 @@ export default class DB {
       }
     });
     sales.items = items;
+    store.products = products;
     // console.log(items);
-    return { products, sellers, customers, purchase, sales, users };
+    return { store, sellers, customers, purchase, sales, users };
   };
   addCustomer = async (customer) => {
     // console.log(product);
@@ -250,6 +264,55 @@ export default class DB {
       .then((doc) => {
         // console.log(doc);
         return doc;
+      });
+  };
+  addDeposit = async (cash, transfer, customer) => {
+    // console.log(customer);
+    // return;
+    this.db
+      .get(customer._id)
+      .then((doc) => {
+        doc.paid += cash + transfer;
+        return this.db.put(doc);
+      })
+      .then((_) => {
+        return this.db.put({
+          _id: "deposit:" + Date.now(),
+          type: "deposit",
+          createdAt: Date.now(),
+          customer: customer.name,
+          cash: cash,
+          transfer: transfer,
+        });
+      })
+      .then((doc) => {
+        // console.log(doc);
+        return doc;
+      });
+  };
+  addWithdrawal = async (cash, transfer, seller) => {
+    // console.log(customer);
+    // return;
+    this.db
+      .get(seller._id)
+      .then((doc) => {
+        doc.paid += cash + transfer;
+        return this.db.put(doc);
+      })
+      .then((_) => {
+        return this.db
+          .put({
+            _id: "withdrawal:" + Date.now(),
+            type: "withdrawal",
+            createdAt: Date.now(),
+            seller: seller.name,
+            cash: cash,
+            transfer: transfer,
+          })
+          .then((res) => {
+            // console.log(doc);
+            return res;
+          });
       });
   };
   makePurchase = async (bill) => {
@@ -378,7 +441,7 @@ export default class DB {
               selector: { type: "customer", name: customer },
               // sort: ["createdAt"],
             }).then(function (result) {
-              console.log(result);
+              // console.log(result);
               let doc = result.docs[0];
               doc.orders = parseInt(doc.orders) + parseInt(total);
               doc.paid = parseInt(doc.paid) + parseInt(paid);

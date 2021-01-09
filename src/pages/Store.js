@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, Form, Container, Row } from "react-bootstrap";
 import ProductTable from "../components/ProductTable";
+import { formatMoney } from "../util";
 // const [state, setstate] = useState(true);
 
 class Store extends Component {
@@ -17,36 +18,6 @@ class Store extends Component {
     store: "",
   };
 
-  // const [show, setShow] = useState(false);
-  // const handleShow = () => setShow(true);
-  // const handleClose = () => setShow(false);
-  // const headers = () => ["Name", "Quantity", "Rate", "Total", "Price", "Total"];
-  // const products = () => [
-  //   {
-  //     name: "Fanta",
-  //     qty: 300,
-  //     rate: 2000,
-  //     price: 2500,
-  //   },
-  //   {
-  //     name: "Fanta",
-  //     qty: 300,
-  //     rate: 2000,
-  //     price: 2500,
-  //   },
-  //   {
-  //     name: "Fanta",
-  //     qty: 300,
-  //     rate: 2000,
-  //     price: 2500,
-  //   },
-  //   {
-  //     name: "Fanta",
-  //     qty: 300,
-  //     rate: 2000,
-  //     price: 2500,
-  //   },
-  // ];
   updateProductDetals = (evt) => {
     const { product } = this.state;
     this.setState({
@@ -72,7 +43,7 @@ class Store extends Component {
     // window.location.href = "/" + e.target.value;
   };
   render() {
-    const products = Object.values(this.props.products);
+    const products = Object.values(this.props.store.products);
     const headers = ["Name", "Quantity", "Rate", "Total", "Price", "Total"];
     // console.log(products);
     return (
@@ -114,6 +85,26 @@ class Store extends Component {
             </Form>
           ) : null}
           <ProductTable headers={headers} tableData={products}></ProductTable>
+          <Form inline>
+            <Form.Label htmlFor="total_rate">Total Rate</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="total_rate"
+              // name="store"
+              value={formatMoney(this.props.store.totalRate)}
+              placeholder="Total Rate"
+            />
+            <Form.Label htmlFor="total_amount">Total Amount</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="total_amount"
+              // name="store"
+              value={formatMoney(this.props.store.totalAmount)}
+              placeholder="Total Amount"
+            />
+          </Form>
         </Container>
       </>
     );

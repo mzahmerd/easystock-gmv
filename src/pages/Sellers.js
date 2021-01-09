@@ -11,6 +11,9 @@ export default class Sellers extends Component {
       paid: 0,
       orders: 0,
     },
+    selectedSeller: "",
+    cash: 0,
+    transfer: 0,
   };
 
   updateSeller = (evt) => {
@@ -24,6 +27,30 @@ export default class Sellers extends Component {
   };
   handleAddSeller = () => {
     this.props.addSeller(this.state.seller);
+  };
+  updateCash = (evt) => {
+    this.setState({
+      cash: evt.target.value,
+    });
+  };
+  updateTransfer = (evt) => {
+    this.setState({
+      transfer: evt.target.value,
+    });
+  };
+  selectSeller = (id) => {
+    this.setState({
+      selectedSeller: this.state.sellers[id],
+    });
+    // console.log(this.state.customers[id]);
+  };
+  handleAddWithdrawl = () => {
+    // console.log("customer" + this.state.selectedCustomer);
+    this.props.addWithdrawal(
+      this.state.cash,
+      this.state.transfer,
+      this.state.selectedSeller
+    );
   };
   render() {
     this.headers = ["Name", "Phone", "Orders", "Paid", "Credit"];
@@ -63,7 +90,39 @@ export default class Sellers extends Component {
           <CustomerTable
             headers={this.headers}
             tableData={Object.values(this.props.sellers)}
+            selectCustomer={this.selectSeller}
           ></CustomerTable>
+          <div>
+            <Form inline>
+              <Form.Label>{this.state.selectedSeller.name}</Form.Label>
+              <br />
+              {/* <Form.Label htmlFor="cash">Cash</Form.Label> */}
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="cash"
+                placeholder="Cash"
+                name="cash"
+                value={this.state.cash}
+                onChange={this.updateCash}
+              />
+              <Form.Label htmlFor="transfer">Transfer</Form.Label>
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="transfer"
+                placeholder="Transfer"
+                name="transfer"
+                value={this.state.transfer}
+                onChange={this.updateTransfer}
+              />
+              <Button
+                variant="primary"
+                onClick={this.handleAddWithdrawl}
+                className="mb-2"
+              >
+                Deposit
+              </Button>
+            </Form>
+          </div>
         </Container>
       </>
     );

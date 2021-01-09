@@ -19,6 +19,7 @@ function ReportNav(props) {
   const handleSwitch = (evt) => {
     props.switchReport(evt.target.innerText);
   };
+  console.log(props.isAdmin);
 
   return (
     <>
