@@ -1,9 +1,12 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 import { formatMoney } from "../util";
-import { BsTrash } from "react-icons/bs";
+import {BsTrash} from "react-icons/bs";
 
-function ProductTable(props) {
+function PurchaseTable(props) {
+    const removeItem = (evt) => {
+      props.removeItem(props.tableData[evt.target.id]._id);
+    };
   return (
     <Table responsive>
       <thead>
@@ -22,6 +25,9 @@ function ProductTable(props) {
             <td>&#8358; {formatMoney(rows.rate * rows.qty)}</td>
             <td>&#8358; {formatMoney(rows.price)}</td>
             <td>&#8358; {formatMoney(rows.price * rows.qty)}</td>
+            <td>
+              <BsTrash color="red" size={20} id={id} onClick={removeItem} />
+            </td>
           </tr>
         ))}
       </tbody>
@@ -29,4 +35,4 @@ function ProductTable(props) {
   );
 }
 
-export default ProductTable;
+export default PurchaseTable;

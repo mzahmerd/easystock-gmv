@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import ProductTable from "../components/ProductTable";
+import PurchaseTable from "../components/PurchaseTable";
+import { formatMoney } from "../util";
 
 export default class Purchase extends Component {
   state = {
@@ -19,6 +21,7 @@ export default class Purchase extends Component {
     },
     paid: "",
     credit: "",
+    last_balance: 0,
   };
 
   getCredit = (evt) => {
@@ -91,7 +94,11 @@ export default class Purchase extends Component {
     });
   };
   updateSeller = (evt) => {
+    const selectedIndex = evt.target.options.selectedIndex;
+    const id = evt.target.options[selectedIndex].getAttribute("id");
+    const { sellers } = this.state;
     this.setState({
+      lastBalance: sellers[id].orders - sellers[id].paid,
       seller: evt.target.value,
     });
   };
@@ -136,7 +143,7 @@ export default class Purchase extends Component {
                   onChange={this.updateSeller}
                 >
                   {this.state.sellers.map((s, index) => (
-                    <option key={index} value={s.name}>
+                    <option key={index} id={index} value={s.name}>
                       {s.name}
                     </option>
                   ))}
@@ -239,11 +246,19 @@ export default class Purchase extends Component {
               </Form>
             </Col>
             <Col className="mb-5 mr-sm-2">
-              <ProductTable
+              <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
+              <Form.Control
+                disabled
+                className="mb-2 mr-sm-2 "
+                id="last_balance"
+                name="last_balance"
+                value={formatMoney(this.state.lastBalance)}
+              />
+              <PurchaseTable
                 headers={headers}
                 tableData={Object.values(this.state.inCart)}
                 removeItem={this.removeItem}
-              ></ProductTable>
+              ></PurchaseTable>
               <Form.Label htmlFor="total">Total</Form.Label>
               <Form.Control
                 disabled
