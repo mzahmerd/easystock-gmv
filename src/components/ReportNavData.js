@@ -6,6 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import * as IoIcons from "react-icons/io";
 
 export const ReportNavData = (isAdmin) => {
+  console.log(isAdmin);
   return isAdmin
     ? [
         {

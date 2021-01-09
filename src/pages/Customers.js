@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Form, Table, Container, Row } from "react-bootstrap";
+import { Button, Form, Container, Row } from "react-bootstrap";
 import CustomerTable from "../components/CustomerTable";
 
 export default class Customers extends Component {
@@ -11,6 +11,9 @@ export default class Customers extends Component {
       paid: 0,
       orders: 0,
     },
+    selectedCustomer: "",
+    cash: 0,
+    transfer: 0,
   };
 
   updateCustomer = (evt) => {
@@ -24,6 +27,30 @@ export default class Customers extends Component {
   };
   handleAddCustomer = () => {
     this.props.addCustomer(this.state.customer);
+  };
+  updateCash = (evt) => {
+    this.setState({
+      cash: evt.target.value,
+    });
+  };
+  updateTransfer = (evt) => {
+    this.setState({
+      transfer: evt.target.value,
+    });
+  };
+  selectCustomer = (id) => {
+    this.setState({
+      selectedCustomer: this.state.customers[id],
+    });
+    // console.log(this.state.customers[id]);
+  };
+  handleAddDeposit = () => {
+    // console.log("customer" + this.state.selectedCustomer);
+    this.props.addDeposit(
+      this.state.cash,
+      this.state.transfer,
+      this.state.selectedCustomer
+    );
   };
   render() {
     this.headers = ["Name", "Phone", "Orders", "Paid", "Credit"];
@@ -63,7 +90,39 @@ export default class Customers extends Component {
           <CustomerTable
             headers={this.headers}
             tableData={Object.values(this.props.customers)}
+            selectCustomer={this.selectCustomer}
           ></CustomerTable>
+          <div>
+            <Form inline>
+              <Form.Label>{this.state.selectedCustomer.name}</Form.Label>
+              <br />
+              {/* <Form.Label htmlFor="cash">Cash</Form.Label> */}
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="cash"
+                placeholder="Cash"
+                name="cash"
+                value={this.state.cash}
+                onChange={this.updateCash}
+              />
+              <Form.Label htmlFor="transfer">Transfer</Form.Label>
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="transfer"
+                placeholder="Transfer"
+                name="transfer"
+                value={this.state.transfer}
+                onChange={this.updateTransfer}
+              />
+              <Button
+                variant="primary"
+                onClick={this.handleAddDeposit}
+                className="mb-2"
+              >
+                Deposit
+              </Button>
+            </Form>
+          </div>
         </Container>
       </>
     );

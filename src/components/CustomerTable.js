@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { Table } from "react-bootstrap";
 
 function CustomerTable(props) {
+  const handleCustomerClick = (evt) => {
+    props.selectCustomer(evt.target.id);
+  };
   return (
     <Table responsive>
       <thead>
@@ -14,7 +17,9 @@ function CustomerTable(props) {
       <tbody>
         {props.tableData.map((rows) => (
           <tr key={rows._id}>
-            <td>{rows.name}</td>
+            <td id={rows._id} onClick={handleCustomerClick}>
+              {rows.name}
+            </td>
             <td>{rows.phone}</td>
             <td>{rows.orders}</td>
             <td>{rows.paid}</td>

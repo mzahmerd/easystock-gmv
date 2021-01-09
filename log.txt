@@ -3498,3 +3498,14 @@
 [Fri, 01 Jan 2021 11:49:02 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_users?_=1609497350208 200
 [Sat, 02 Jan 2021 22:30:18 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
 [Sat, 02 Jan 2021 22:30:18 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.
+[Wed, 06 Jan 2021 11:55:48 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
+[Wed, 06 Jan 2021 11:55:48 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.
+[Fri, 08 Jan 2021 10:58:11 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
+[Fri, 08 Jan 2021 10:58:11 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.
+[Fri, 08 Jan 2021 11:05:51 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
+[Fri, 08 Jan 2021 11:05:51 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.
+[Fri, 08 Jan 2021 11:06:11 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_utils/ 200
+[Fri, 08 Jan 2021 11:06:25 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_utils/ 200
+[Fri, 08 Jan 2021 18:39:09 GMT] [info] [<0.000.0>] pouchdb-server has started on http://127.0.0.1:5984/
+[Fri, 08 Jan 2021 18:39:09 GMT] [info] [<0.000.0>] navigate to http://127.0.0.1:5984/_utils for the Fauxton UI.
+[Fri, 08 Jan 2021 18:40:50 GMT] [info] [<0.000.0>] 127.0.0.1 - - GET /_utils/ 200

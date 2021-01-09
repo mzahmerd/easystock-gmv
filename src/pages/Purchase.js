@@ -71,7 +71,15 @@ export default class Purchase extends Component {
     });
     // console.log(this.state.inCart);
   };
-
+  removeItem = (id) => {
+    let items = Object.values(this.state.inCart);
+    // let total = this.state.total;
+    // total -= this.state.inCart[id].qty + this.state.inCart[id].rate;
+    this.setState({
+      inCart: items.filter((item) => item._id !== id),
+      // total: total,
+    });
+  };
   updateProduct = (evt) => {
     evt.preventDefault();
     const { product } = this.state;
@@ -103,7 +111,15 @@ export default class Purchase extends Component {
   render() {
     // console.log(this.state.products[0]._id);
 
-    const headers = ["Name", "Quantity", "Rate", "Total", "Price", "Total"];
+    const headers = [
+      "Name",
+      "Quantity",
+      "Rate",
+      "Total",
+      "Price",
+      "Total",
+      "Action",
+    ];
 
     return (
       <>
@@ -111,7 +127,6 @@ export default class Purchase extends Component {
           <Row style={{ margin: 20 + "px" }}>
             <Col className="mb-2 mr-sm-2" bsPrefix>
               <Form>
-               
                 <Form.Control
                   as="select"
                   className="mb-2 mr-sm-2"
@@ -187,7 +202,6 @@ export default class Purchase extends Component {
                 <Button className="m-2" onClick={this.addToCart}>
                   Add
                 </Button>{" "}
-                <Button className="m-2">Remove</Button>
                 <Container className="mt-lg-5 ml-0">
                   <Row>
                     <Col bsPrefix className=" right-align md-col-right">
@@ -228,6 +242,7 @@ export default class Purchase extends Component {
               <ProductTable
                 headers={headers}
                 tableData={Object.values(this.state.inCart)}
+                removeItem={this.removeItem}
               ></ProductTable>
               <Form.Label htmlFor="total">Total</Form.Label>
               <Form.Control

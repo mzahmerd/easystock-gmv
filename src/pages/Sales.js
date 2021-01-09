@@ -2,20 +2,25 @@ import React, { Component } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import SalesTable from "../components/SalesTable";
 import { formatMoney } from "../util";
+import { object } from "prop-types";
 
 export default class Sales extends Component {
   state = {
     customers: Object.values(this.props.customers),
-    products: Object.values(this.props.products),
-    inStore: this.getFirstObj(this.props.products).qty,
+    products: Object.values(this.props.store.products),
+    inStore: this.getFirstObj(this.props.store.products).qty,
     inCart: {},
     customer: this.getFirstObj(this.props.customers).name,
+    lastBalance:
+      this.getFirstObj(this.props.customers).orders -
+      this.getFirstObj(this.props.customers).paid,
+
     total: 0,
     product: {
-      _id: this.getFirstObj(this.props.products)._id,
-      name: this.getFirstObj(this.props.products).name,
+      _id: this.getFirstObj(this.props.store.products)._id,
+      name: this.getFirstObj(this.props.store.products).name,
       qty: "",
-      price: this.getFirstObj(this.props.products).price,
+      price: this.getFirstObj(this.props.store.products).price,
     },
     paid: "",
     credit: "",
@@ -69,7 +74,12 @@ export default class Sales extends Component {
     });
     // console.log(this.state.inCart);
   };
-
+  removeItem = (id) => {
+    let items = Object.values(this.state.inCart);
+    this.setState({
+      inCart: items.filter((item) => item._id !== id),
+    });
+  };
   updateProduct = (evt) => {
     evt.preventDefault();
     const { product } = this.state;
@@ -81,7 +91,12 @@ export default class Sales extends Component {
     });
   };
   updateCustomer = (evt) => {
+    const selectedIndex = evt.target.options.selectedIndex;
+    const id = evt.target.options[selectedIndex].getAttribute("id");
+    const { customers } = this.state;
+
     this.setState({
+      lastBalance: customers[id].orders - customers[id].paid,
       customer: evt.target.value,
     });
   };
@@ -100,9 +115,9 @@ export default class Sales extends Component {
     this.props.makeSales(bill);
   };
   render() {
-    // console.log(this.state.products[0]._id);
+    // console.log(this.getFirstObj(this.props.customers));
 
-    const headers = ["Name", "Quantity", "Price", "Total"];
+    const headers = ["Name", "Quantity", "Price", "Total", "Action"];
 
     return (
       <>
@@ -119,7 +134,7 @@ export default class Sales extends Component {
                   onChange={this.updateCustomer}
                 >
                   {this.state.customers.map((s, index) => (
-                    <option key={index} value={s.name}>
+                    <option key={index} id={index} value={s.name}>
                       {s.name}
                     </option>
                   ))}
@@ -174,7 +189,6 @@ export default class Sales extends Component {
                 <Button className="m-2" onClick={this.addToCart}>
                   Add
                 </Button>{" "}
-                <Button className="m-2">Remove</Button>
                 <Container className="mt-lg-5 ml-0">
                   <Row>
                     <Col bsPrefix className=" right-align md-col-right">
@@ -209,9 +223,18 @@ export default class Sales extends Component {
               </Form>
             </Col>
             <Col className="mb-5 mr-sm-2">
+              <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
+              <Form.Control
+                disabled
+                className="mb-2 mr-sm-2 "
+                id="last_balance"
+                name="last_balance"
+                value={formatMoney(this.state.lastBalance)}
+              />
               <SalesTable
                 headers={headers}
                 tableData={Object.values(this.state.inCart)}
+                removeItem={this.removeItem}
               ></SalesTable>
               <Form.Label htmlFor="total">Total</Form.Label>
               <Form.Control
