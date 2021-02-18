@@ -53,6 +53,7 @@ export default class Users extends Component {
             />
             <Button
               variant="primary"
+              disabled={!(this.state.user.password && this.state.user.username)}
               onClick={this.handleAddUser}
               className="mb-2"
             >

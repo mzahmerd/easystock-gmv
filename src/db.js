@@ -273,6 +273,7 @@ export default class DB {
       .get(customer._id)
       .then((doc) => {
         doc.paid += cash + transfer;
+        if (doc.paid === doc.orders) doc.lastBalance = Date.now();
         return this.db.put(doc);
       })
       .then((_) => {
@@ -445,7 +446,7 @@ export default class DB {
               let doc = result.docs[0];
               doc.orders = parseInt(doc.orders) + parseInt(total);
               doc.paid = parseInt(doc.paid) + parseInt(paid);
-
+              if (doc.paid === doc.orders) doc.lastBalance = Date.now();
               db.put(doc).then((res) => {
                 console.log(res);
                 // updated

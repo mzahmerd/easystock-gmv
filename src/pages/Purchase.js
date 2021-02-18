@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import ProductTable from "../components/ProductTable";
 import PurchaseTable from "../components/PurchaseTable";
-import { formatMoney } from "../util";
+import { formatMoney, convertDate } from "../util";
 
 export default class Purchase extends Component {
   state = {
@@ -21,7 +21,10 @@ export default class Purchase extends Component {
     },
     paid: "",
     credit: "",
-    last_balance: 0,
+    lastBalance: this.getFirstObj(this.props.sellers).lastBalance,
+    balance:
+      this.getFirstObj(this.props.sellers).orders -
+      this.getFirstObj(this.props.sellers).paid,
   };
 
   getCredit = (evt) => {
@@ -206,7 +209,11 @@ export default class Purchase extends Component {
                   value={this.state.product.qty}
                   onChange={this.updateProduct}
                 />
-                <Button className="m-2" onClick={this.addToCart}>
+                <Button
+                  className="m-2"
+                  disabled={!this.state.product.qty}
+                  onClick={this.addToCart}
+                >
                   Add
                 </Button>{" "}
                 <Container className="mt-lg-5 ml-0">
@@ -236,6 +243,7 @@ export default class Purchase extends Component {
                       />
                       <Button
                         variant="primary"
+                        disabled={!this.state.total}
                         onClick={this.handleMakePurchase}
                       >
                         Save
@@ -246,14 +254,24 @@ export default class Purchase extends Component {
               </Form>
             </Col>
             <Col className="mb-5 mr-sm-2">
-              <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
-              <Form.Control
-                disabled
-                className="mb-2 mr-sm-2 "
-                id="last_balance"
-                name="last_balance"
-                value={formatMoney(this.state.lastBalance)}
-              />
+              <Row>
+                <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
+                <Form.Control
+                  disabled
+                  className="mb-2 mr-sm-2 "
+                  id="last_balance"
+                  name="last_balance"
+                  value={convertDate(this.state.lastBalance)}
+                />
+                <Form.Label htmlFor="balance">Balance</Form.Label>
+                <Form.Control
+                  disabled
+                  className="mb-2 mr-sm-2 "
+                  id="balance"
+                  name="balance"
+                  value={formatMoney(this.state.balance)}
+                />
+              </Row>
               <PurchaseTable
                 headers={headers}
                 tableData={Object.values(this.state.inCart)}

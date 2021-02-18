@@ -63,14 +63,17 @@ class Store extends Component {
                 placeholder="Store name"
                 onChange={this.setStoreName}
               />
-              <Button onClick={this.handleAddStore} className="mb-2">
+
+              <Button
+                onClick={this.handleAddStore}
+                disabled={!this.state.store}
+                className="mb-2"
+              >
                 Add Store
               </Button>
-
               <Form.Label htmlFor="product_name" srOnly>
                 Product Name
               </Form.Label>
-
               <Form.Control
                 className=" align-content-end mb-2 mr-sm-2"
                 id="product_name"
@@ -79,7 +82,11 @@ class Store extends Component {
                 onChange={this.updateProductDetals}
                 placeholder="product name"
               />
-              <Button onClick={this.handleAdd} className="mb-2">
+              <Button
+                onClick={this.handleAdd}
+                disabled={!this.state.product.name}
+                className="mb-2"
+              >
                 Add Product
               </Button>
             </Form>
