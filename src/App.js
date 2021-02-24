@@ -11,11 +11,12 @@ import Purchase from "./pages/Purchase";
 import Customers from "./pages/Customers";
 import Sellers from "./pages/Sellers";
 import Users from "./pages/Users";
-import Invoice from "./pages/Invoice";
+import MyInvoice from "./pages/MyInvoice";
 
 import DB from "./db";
 import Login from "./pages/Login";
-import { Alert } from "react-bootstrap";
+import { Alert, Modal, Button } from "react-bootstrap";
+import { Text } from "@react-pdf/renderer";
 
 class App extends Component {
   constructor(props) {
@@ -29,7 +30,9 @@ class App extends Component {
     // });
     this.state = {
       loading: true,
+      modalOpen: false,
       selectedStore: "main",
+      invoice: {},
       stores: {},
       store: {},
       products: {},
@@ -42,6 +45,7 @@ class App extends Component {
       username: localStorage.getItem("username"),
       isAdmin: this.toBool(localStorage.getItem("isAdmin")),
     };
+    // console.log(localStorage["username"]);
   }
   loadData = async () => {
     const stores = await this.db.getStores();
@@ -175,19 +179,32 @@ class App extends Component {
   makeSales = async (bill) => {
     // this.printInvoice(1343566);
     // return;
-    await this.db.makeSales(bill);
-    this.loadData();
+    const invoice = await this.db.makeSales(bill);
+    // this.setState({
+    //   invoice: invoice
+    // })
+
+    return invoice;
+    // if (invoice) this.comfirmPrint(invoice);
     // console.log(store);
+  };
+  comfirmPrint = async (invoice) => {
+    this.setState({
+      invoice: invoice,
+    });
   };
   storeProducts = (store) => {
     console.log("item" + this.state.store[0]);
     return this.state.store[0];
   };
-  printInvoice = (saleId) => {
-    ReactDOM.render(
-      <Invoice saleId={saleId} />,
-      document.getElementById("invoice")
-    );
+  printInvoice = () => {
+    this.setState({
+      printing: true,
+    });
+    // ReactDOM.render(
+    //   <MyInvoice saleId={saleId} />,
+    //   document.getElementById("invoice")
+    // );
   };
   logout = () => {
     this.setState({
@@ -275,6 +292,7 @@ class App extends Component {
             selectedStore={this.state.selectedStore}
             changeStore={this.changeStore}
           />
+
           <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
         </Router>
       );
@@ -317,6 +335,7 @@ class App extends Component {
               customers={this.state.customers}
               stores={this.stores}
               store={this.state.store}
+              comfirmPrint={this.comfirmPrint}
               makeSales={this.makeSales}
               isAdmin={this.state.isAdmin}
             />
@@ -390,7 +409,9 @@ class App extends Component {
         <Route
           path="/Invoice"
           exact
-          component={(props) => <Invoice {...props} salesId={123345657765} />}
+          component={(props) => (
+            <MyInvoice {...props} invoice={this.state.invoice} />
+          )}
         />
       </Switch>
     );

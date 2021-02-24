@@ -39,6 +39,9 @@ export default class Report extends Component {
     if (this.state.report === "Sellers") {
       return this.sellersReport();
     }
+    if (this.state.report === "Users") {
+      return this.usersReport();
+    }
   };
   render() {
     // console.log(products);
@@ -50,11 +53,12 @@ export default class Report extends Component {
       </>
     );
   }
-
+  usersReport = () => {};
   salesReport = () => {
     const headers = ["Product", "Quantity", "Amount"];
     const { items, total, paid } = this.props.sales;
     let products = {};
+    // console.log(items);
     items.map((p) => {
       if (!products[p.product]) {
         products[p.product] = {
@@ -73,6 +77,7 @@ export default class Report extends Component {
           },
         };
       }
+      // console.log(products);
     });
 
     return (
@@ -133,7 +138,7 @@ export default class Report extends Component {
     );
   };
   customersReport = () => {
-    const headers = [ "Product", "Quantity", "Amount", "Date"];
+    const headers = ["Product", "Quantity", "Amount", "Date"];
     const customers = Object.values(this.props.customers);
 
     // console.log(items);
@@ -171,13 +176,14 @@ export default class Report extends Component {
       );
 
       // console.log(items);
-      this.setState({
-        customerOrders: {
-          items: items,
-          total: total,
-          paid: paid,
-        },
-      });
+      if (items)
+        this.setState({
+          customerOrders: {
+            items: items,
+            total: total,
+            paid: paid,
+          },
+        });
     };
     return (
       <Row style={{ margin: 20 + "px" }}>
@@ -253,34 +259,70 @@ export default class Report extends Component {
     );
   };
   sellersReport = () => {
-    const headers = ["Product", "Quantity", "Amount"];
-    const { items, total, paid } = this.props.sales;
-    let products = {};
-    console.log(items);
-    items.map((p) => {
-      if (!products[p.product]) {
-        products[p.product] = {
-          product: p.product,
-          qty: Number.parseInt(p.qty),
-          amount: p.price * p.qty,
-        };
-      } else {
-        products = {
-          ...products,
-          [p.product]: {
-            product: p.product,
-            qty:
-              Number.parseInt(products[p.product].qty) + Number.parseInt(p.qty),
-            amount: products[p.product].amount + p.qty * p.price,
-          },
-        };
-      }
-    });
+    const headers = ["Product", "Quantity", "Amount", "Date"];
+    const sellers = Object.values(this.props.sellers);
 
+    // console.log(items);
+
+    let products = {};
+    // items.map((p) => {
+    //   if (!products[p.product]) {
+    //     products[p.product] = {
+    //       product: p.product,
+    //       qty: Number.parseInt(p.qty),
+    //       amount: p.price * p.qty,
+    //     };
+    //   } else {
+    //     products = {
+    //       ...products,
+    //       [p.product]: {
+    //         product: p.product,
+    //         qty:
+    //           Number.parseInt(products[p.product].qty) + Number.parseInt(p.qty),
+    //         amount: products[p.product].amount + p.qty * p.price,
+    //       },
+    //     };
+    //   }
+    // });
+    const updateSeller = (evt) => {
+      this.setState({
+        seller: evt.target.value,
+      });
+    };
+    const handleOrderFilter = async () => {
+      const { items, total, paid } = await this.props.getSellerOrders(
+        this.state.seller,
+        this.state.from,
+        this.state.to
+      );
+
+      // console.log(items);
+      this.setState({
+        sellerOrders: {
+          items: items,
+          total: total,
+          paid: paid,
+        },
+      });
+    };
     return (
       <Row style={{ margin: 20 + "px" }}>
         <Col className="mb-5 mr-sm-4" bsPrefix>
           <Form>
+            <Form.Control
+              as="select"
+              className="mb-2 mr-sm-2"
+              id="sel_seller"
+              custom
+              name="seller"
+              onChange={updateSeller}
+            >
+              {sellers.map((s, index) => (
+                <option key={index} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </Form.Control>
             <DatePicker
               dateFormat="dd/MM/yyyy"
               selected={this.state.from}
@@ -295,7 +337,7 @@ export default class Report extends Component {
             />
             <br />
             <br />
-            <Button className="float-right" onClick={this.handleSalesFilter}>
+            <Button className="float-right" onClick={handleOrderFilter}>
               Search
             </Button>
             <br />
@@ -306,29 +348,31 @@ export default class Report extends Component {
               disabled
               className="mb-2 mr-sm-2"
               id="total_sales"
-              value={formatMoney(total)}
+              value={formatMoney(this.state.sellerOrders.total)}
             />
-            <Form.Label htmlFor="credit">Credit</Form.Label>
+            <Form.Label htmlFor="credit">Paid</Form.Label>
             <Form.Control
               disabled
               className="mb-2 mr-sm-2"
               id="credit"
-              value={formatMoney(total - paid)}
+              value={formatMoney(this.state.sellerOrders.paid)}
             />
             <Form.Label htmlFor="balance">Balance</Form.Label>
             <Form.Control
               disabled
               className="mb-2 mr-sm-2"
               id="balance"
-              value={formatMoney(paid)}
+              value={formatMoney(
+                this.state.sellerOrders.total - this.state.sellerOrders.paid
+              )}
             />
           </Form>
         </Col>
         <Col className="mb-4 mr-sm-2">
-          <SOTable
-            type="so"
+          <COTable
+            type="co"
             headers={headers}
-            tableData={Object.values(products)}
+            tableData={Object.values(this.state.sellerOrders.items)}
           />
         </Col>
       </Row>

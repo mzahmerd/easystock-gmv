@@ -1,15 +1,17 @@
 import React, { Component } from "react";
-import { Row, Container, Form, Button, Col } from "react-bootstrap";
+import { Row, Container, Form, Button, Col, Modal } from "react-bootstrap";
 import SalesTable from "../components/SalesTable";
 import { formatMoney, convertDate } from "../util";
-import { object } from "prop-types";
+import { Text } from "@react-pdf/renderer";
 
 export default class Sales extends Component {
   state = {
+    modalOpen: false,
     customers: Object.values(this.props.customers),
     products: Object.values(this.props.store.products),
     inStore: this.getFirstObj(this.props.store.products).qty,
     inCart: {},
+    invoice: {},
     customer: this.getFirstObj(this.props.customers).name,
     lastBalance: this.getFirstObj(this.props.customers).lastBalance,
     balance:
@@ -114,7 +116,29 @@ export default class Sales extends Component {
       products: Object.values(this.state.inCart),
     };
     // console.log(bill);
-    this.props.makeSales(bill);
+    const invoice = this.props.makeSales(bill);
+    console.log(invoice);
+    // if (invoice) this.handleOpen();
+    this.setState({
+      invoice: invoice,
+    });
+  };
+  handleOpen = () => {
+    this.setState({
+      modalOpen: true,
+    });
+  };
+  handleClose = () => {
+    this.setState({
+      modalOpen: false,
+    });
+  };
+  printInvoice = () => {
+    console.log(this.state.invoice);
+    this.props.comfirmPrint(this.state.invoice);
+    // console.log(window.location.href.replace("Sales", "Invoice"));
+    // window.location.href = window.location.href.replace("Sales", "Invoice");
+    // location.href = "http://localhost:3000/Invoice";
   };
   render() {
     // console.log(this.getFirstObj(this.props.customers));
@@ -124,6 +148,23 @@ export default class Sales extends Component {
     return (
       <>
         <Container>
+          <Modal
+            show={this.state.modalOpen}
+            onHide={this.handleClose}
+            // onHide={this.setState({ modalOpen: false })}
+          >
+            <Modal.Body>
+              <Text> Bill Created Successfully</Text>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={this.printInvoice}>
+                Print Invoice
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <Row style={{ margin: 20 + "px" }}>
             <Col className="mb-2 mr-sm-2" bsPrefix>
               <Form>
@@ -225,7 +266,7 @@ export default class Sales extends Component {
                         disabled={!this.state.total}
                         onClick={this.handleMakeSales}
                       >
-                        Save
+                        Submit
                       </Button>
                     </Col>
                   </Row>

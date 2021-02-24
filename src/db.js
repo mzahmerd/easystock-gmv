@@ -18,16 +18,16 @@ export default class DB {
         // this.db = new PouchDB(Credentials.default.remote_url);
 
         this.remoteDB = new PouchDB(Credentials.default.remote_url + name);
-        this.db
-          .sync(this.remoteDB, {
-            live: true,
-          })
-          .on("change", function (change) {
-            // yo, something changed!
-          })
-          .on("error", function (err) {
-            // yo, we got an error! (maybe the user went offline?)
-          });
+        this.db.sync(this.remoteDB);
+        //   , {
+        //   live: true,
+        // })
+        // .on("change", function (change) {
+        //   // yo, something changed!
+        // })
+        // .on("error", function (err) {
+        //   // yo, we got an error! (maybe the user went offline?)
+        // });
       }
     } catch (ex) {
       console.log("secret.js file missing; disabling remote sync.");
@@ -249,7 +249,7 @@ export default class DB {
   };
 
   updateProduct = async (product) => {
-    this.db
+    await this.db
       .get(product._id)
       .then((doc) => {
         doc.rate = product.rate;
@@ -269,7 +269,7 @@ export default class DB {
   addDeposit = async (cash, transfer, customer) => {
     // console.log(customer);
     // return;
-    this.db
+    await this.db
       .get(customer._id)
       .then((doc) => {
         doc.paid += cash + transfer;
@@ -294,7 +294,7 @@ export default class DB {
   addWithdrawal = async (cash, transfer, seller) => {
     // console.log(customer);
     // return;
-    this.db
+    await this.db
       .get(seller._id)
       .then((doc) => {
         doc.paid += cash + transfer;
@@ -326,7 +326,7 @@ export default class DB {
         [index]: { product: p.name, qty: p.qty, rate: p.rate },
       };
     });
-    this.db
+    await this.db
       .bulkDocs([
         {
           _id: "purchase:" + createdAt,
@@ -392,7 +392,7 @@ export default class DB {
 
   makeSales = async (bill) => {
     let db = this.db;
-    const { products, customer, total, paid, createdAt } = bill;
+    const { products, user, customer, total, paid, createdAt } = bill;
     let items = {};
     products.forEach((p, index) => {
       items = {
@@ -400,13 +400,14 @@ export default class DB {
         [index]: { product: p.name, qty: p.qty, price: p.price },
       };
     });
-    this.db
+    await this.db
       .bulkDocs([
         {
           _id: "sales:" + createdAt,
           customer: customer,
           total: total,
           paid: paid,
+          user: user,
           createdAt: createdAt,
           type: "sale",
           items: items,
@@ -448,7 +449,7 @@ export default class DB {
               doc.paid = parseInt(doc.paid) + parseInt(paid);
               if (doc.paid === doc.orders) doc.lastBalance = Date.now();
               db.put(doc).then((res) => {
-                console.log(res);
+                // console.log(res);
                 // updated
               });
 
@@ -460,6 +461,55 @@ export default class DB {
             // ouch, an error
           });
       });
+    return await this.getInvoice(createdAt);
+  };
+  getInvoice = async (salesId) => {
+    // let items = [];
+    const invoice = {
+      customer: "",
+      user: "",
+      createdAt: 0,
+      billNo: salesId,
+      total: 0,
+      paid: 0,
+    };
+
+    await this.db.createIndex({
+      index: { fields: ["type", "_id"] },
+    });
+    // console.log(from);
+    await this.db
+      .find({
+        selector: {
+          type: "sale",
+          _id: "sales:" + salesId,
+        },
+        // fields: ["_id", "name"],
+        // sort: ["createdAt"],
+      })
+      .then(function (res) {
+        let sale = res.docs[0];
+        // result.docs.forEach((s) => {
+        //   // sales.total += s.total;
+        //   // sales.paid += s.paid;
+        //   // items = items.concat(Object.values(s.items));
+        // });
+        invoice.paid = sale.paid;
+        invoice.total = sale.total;
+        invoice.customer = sale.customer;
+        invoice.createdAt = sale.createAt;
+        invoice.items = sale.items;
+        invoice.cashier = sale.user;
+        // yo, a result
+      })
+      .catch(function (err) {
+        console.log(err);
+        // ouch, an error
+      });
+    return invoice;
+
+    // console.log(sales);
+    return null;
   };
   getSalesByDate = async (from, to) => {
     let sales = {
@@ -471,7 +521,7 @@ export default class DB {
     await this.db.createIndex({
       index: { fields: ["type", "createdAt"] },
     });
-    console.log(from);
+    // console.log(from);
     await this.db
       .find({
         selector: {
@@ -483,8 +533,8 @@ export default class DB {
       })
       .then(function (result) {
         result.docs.forEach((s) => {
-          sales.total = s.total;
-          sales.paid = s.paid;
+          sales.total += s.total;
+          sales.paid += s.paid;
           items = items.concat(Object.values(s.items));
         });
         sales.items = items;

@@ -19,13 +19,13 @@ function ReportNav(props) {
   const handleSwitch = (evt) => {
     props.switchReport(evt.target.innerText);
   };
-  console.log(props.isAdmin);
-
+  // console.log(props.isAdmin);
+  const isAdmin = localStorage["isAdmin"];
   return (
     <>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div className="report-nav">
-          {ReportNavData(props.isAdmin).map((item, index) => {
+          {ReportNavData(isAdmin).map((item, index) => {
             return (
               <li key={index} className={item.cName}>
                 <Link onClick={handleSwitch} to={item.path}>

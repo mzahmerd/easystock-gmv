@@ -6,6 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import * as IoIcons from "react-icons/io";
 
 export const ReportNavData = (isAdmin) => {
+  // isAdmin = true;
   console.log(isAdmin);
   return isAdmin
     ? [
@@ -13,6 +14,12 @@ export const ReportNavData = (isAdmin) => {
           title: "Sales",
           path: "/Report",
           icon: <FaIcons.FaShoppingCart />,
+          cName: "nav-text",
+        },
+        {
+          title: "Users",
+          path: "/Report",
+          icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
 
@@ -24,7 +31,7 @@ export const ReportNavData = (isAdmin) => {
         },
         {
           title: "Sellers",
-          path: "/Report/Sellers",
+          path: "/Report",
           icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
