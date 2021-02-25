@@ -45,7 +45,7 @@ const InvoiceTableRow = ({ items }) => {
       <Text style={styles.description}>{item.product}</Text>
       <Text style={styles.qty}>{item.qty}</Text>
       <Text style={styles.rate}>{item.price}</Text>
-      <Text style={styles.amount}>{(item.qty * item.price).toFixed(2)}</Text>
+      <Text style={styles.amount}>{item.qty * item.price}</Text>
     </View>
   ));
   return <Fragment>{rows}</Fragment>;

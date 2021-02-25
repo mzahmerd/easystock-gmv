@@ -162,6 +162,10 @@ class App extends Component {
         });
     // console.log(sales);
   };
+  getUserSales = async (user, from, to) => {
+    const orders = await this.db.getUserSales(user, from, to);
+    return orders;
+  };
   getCustomerOrders = async (customer, from, to) => {
     const orders = await this.db.getCustomerOrders(customer, from, to);
     return orders;
@@ -269,7 +273,8 @@ class App extends Component {
     // if (await this.db.login(user)) {
     //   this.loadData();
     // }
-    let exist = this.state.users[`users:${user.username}`];
+    let exist = await this.state.users[`users:${user.username}`];
+    // console.log(user);
     if (exist) {
       if (exist.password === user.password) {
         localStorage.setItem("isAdmin", !!exist.isAdmin);
@@ -394,8 +399,10 @@ class App extends Component {
               {...props}
               sellers={this.state.sellers}
               customers={this.state.customers}
+              users={this.state.users}
               sales={this.state.sales}
               purchase={this.state.purchase}
+              getUserSales={this.getUserSales}
               getCustomerOrders={this.getCustomerOrders}
               getSellerOrders={this.getSellerOrders}
               getSalesByDate={this.getSalesByDate}

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PRTable from "../components/PRTable";
 import COTable from "../components/COTable";
 import SOTable from "../components/SOTable";
+import USTable from "../components/USTable";
+
 import { Row, Col, Button, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 
@@ -19,6 +21,10 @@ export default class Report extends Component {
     customerOrders: { items: {}, total: 0, paid: 0 },
     seller: Object.values(this.props.sellers)[0].name,
     sellerOrders: { items: {}, total: 0, paid: 0 },
+    user: !this.props.isAdmin
+      ? localStorage["username"]
+      : Object.values(this.props.users)[0].username,
+    userSales: { items: {}, total: 0, paid: 0 },
   };
 
   switchReport = (report) => {
@@ -51,11 +57,193 @@ export default class Report extends Component {
     return (
       <>
         {this.renderReport()}
-        <ReportNav switchReport={this.switchReport} />
+        <ReportNav
+          isAdmin={this.props.isAdmin}
+          switchReport={this.switchReport}
+        />
       </>
     );
   }
-  usersReport = () => {};
+  usersReport = () => {
+    const headers = [
+      "Bill No",
+      "Customer",
+      "Product",
+      "Quantity",
+      "Price",
+      "Amount",
+      "Date",
+      "Store",
+    ];
+    const users = Object.values(this.props.users);
+    const updateUser = (evt) => {
+      this.setState({
+        user: evt.target.value,
+      });
+    };
+    const handleOrderFilter = async () => {
+      // console.log(this.state.user);
+      const { items, total, paid } = await this.props.getUserSales(
+        this.state.user,
+        this.state.from,
+        this.state.to
+      );
+      if (items)
+        this.setState({
+          userSales: {
+            items: items,
+            total: total,
+            paid: paid,
+          },
+        });
+    };
+    return !this.props.isAdmin ? (
+      <Row style={{ margin: 20 + "px" }}>
+        <Col className="mb-5 mr-sm-4" bsPrefix>
+          <Form>
+            <Form.Control
+              as="select"
+              className="mb-2 mr-sm-2"
+              id="sel_user"
+              custom
+              name="user"
+              disabled={!this.props.isAdmin}
+              value={localStorage["username"]}
+              onChange={updateUser}
+            >
+              {users.map((s, index) => (
+                <option key={index} value={s.username}>
+                  {s.username}
+                </option>
+              ))}
+            </Form.Control>
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.from}
+              onChange={(date) => this.setState({ from: date })}
+            />{" "}
+            <br />
+            <br />
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.to}
+              onChange={(date) => this.setState({ to: date })}
+            />
+            <br />
+            <br />
+            <Button className="float-right" onClick={handleOrderFilter}>
+              Search
+            </Button>
+            <br />
+            <br />
+            <br />
+            <Form.Label htmlFor="total_sales">Total Sales</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="total_sales"
+              value={formatMoney(this.state.userSales.total)}
+            />
+            <Form.Label htmlFor="credit">Paid</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="credit"
+              value={formatMoney(this.state.userSales.paid)}
+            />
+            <Form.Label htmlFor="balance">Balance</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="balance"
+              value={formatMoney(
+                this.state.userSales.total - this.state.userSales.paid
+              )}
+            />
+          </Form>
+        </Col>
+        <Col className="mb-4 mr-sm-2">
+          <USTable
+            type="co"
+            headers={headers}
+            tableData={Object.values(this.state.userSales.items)}
+          />
+        </Col>
+      </Row>
+    ) : (
+      <Row style={{ margin: 20 + "px" }}>
+        <Col className="mb-5 mr-sm-4" bsPrefix>
+          <Form>
+            <Form.Control
+              as="select"
+              className="mb-2 mr-sm-2"
+              id="sel_user"
+              custom
+              name="user"
+              disabled={!this.props.isAdmin}
+              onChange={updateUser}
+            >
+              {users.map((s, index) => (
+                <option key={index} value={s.username}>
+                  {s.username}
+                </option>
+              ))}
+            </Form.Control>
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.from}
+              onChange={(date) => this.setState({ from: date })}
+            />{" "}
+            <br />
+            <br />
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.to}
+              onChange={(date) => this.setState({ to: date })}
+            />
+            <br />
+            <br />
+            <Button className="float-right" onClick={handleOrderFilter}>
+              Search
+            </Button>
+            <br />
+            <br />
+            <br />
+            <Form.Label htmlFor="total_sales">Total Sales</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="total_sales"
+              value={formatMoney(this.state.userSales.total)}
+            />
+            <Form.Label htmlFor="credit">Paid</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="credit"
+              value={formatMoney(this.state.userSales.paid)}
+            />
+            <Form.Label htmlFor="balance">Balance</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="balance"
+              value={formatMoney(
+                this.state.userSales.total - this.state.userSales.paid
+              )}
+            />
+          </Form>
+        </Col>
+        <Col className="mb-4 mr-sm-2">
+          <USTable
+            type="co"
+            headers={headers}
+            tableData={Object.values(this.state.userSales.items)}
+          />
+        </Col>
+      </Row>
+    );
+  };
   salesReport = () => {
     const headers = ["Product", "Quantity", "Amount"];
     const { items, total, paid } = this.props.sales;
