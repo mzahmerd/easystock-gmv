@@ -26,15 +26,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const InvoiceTableFooter = ({ items }) => {
-  const total = items
-    .map((item) => item.qty * item.rate)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+const InvoiceTableFooter = ({ total, paid }) => {
+  // const total = ;
+  // Object.values(items)
+  //   .map((item) => item.qty * item.price)
+  //   .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
   return (
-    <View style={styles.row}>
-      <Text style={styles.description}>TOTAL</Text>
-      <Text style={styles.total}>{Number.parseFloat(total).toFixed(2)}</Text>
-    </View>
+    <>
+      <View style={styles.row}>
+        <Text style={styles.description}>TOTAL</Text>
+        <Text style={styles.total}>{Number.parseFloat(total).toFixed(2)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.description}>PAID</Text>
+        <Text style={styles.total}>{Number.parseFloat(paid).toFixed(2)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.description}>BAL</Text>
+        <Text style={styles.total}>
+          {Number.parseFloat(total - paid).toFixed(2)}
+        </Text>
+      </View>
+    </>
   );
 };
 

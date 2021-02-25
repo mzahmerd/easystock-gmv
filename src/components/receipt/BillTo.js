@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { convertDate } from "../../util";
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -14,10 +15,10 @@ const styles = StyleSheet.create({
 
 const BillTo = ({ invoice }) => (
   <View style={styles.headerContainer}>
-    <Text>Bill No: {invoice.company}</Text>
-    <Text>Customer: {invoice.company}</Text>
-    <Text>Cashier: {invoice.company}</Text>
-    <Text>Time: {invoice.company}</Text>
+    <Text>Bill No: {invoice.billNo}</Text>
+    <Text>Customer: {invoice.customer}</Text>
+    <Text>Cashier: {invoice.cashier}</Text>
+    <Text>Time: {convertDate(invoice.createdAt)}</Text>
   </View>
 );
 

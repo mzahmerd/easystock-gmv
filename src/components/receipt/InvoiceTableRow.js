@@ -40,12 +40,12 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceTableRow = ({ items }) => {
-  const rows = items.map((item) => (
-    <View style={styles.row} key={item.sno.toString()}>
-      <Text style={styles.description}>{item.desc}</Text>
+  const rows = Object.values(items).map((item) => (
+    <View style={styles.row} key={item.product}>
+      <Text style={styles.description}>{item.product}</Text>
       <Text style={styles.qty}>{item.qty}</Text>
-      <Text style={styles.rate}>{item.rate}</Text>
-      <Text style={styles.amount}>{(item.qty * item.rate).toFixed(2)}</Text>
+      <Text style={styles.rate}>{item.price}</Text>
+      <Text style={styles.amount}>{(item.qty * item.price).toFixed(2)}</Text>
     </View>
   ));
   return <Fragment>{rows}</Fragment>;

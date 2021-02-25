@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
-
 import "./App.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -15,8 +13,6 @@ import MyInvoice from "./pages/MyInvoice";
 
 import DB from "./db";
 import Login from "./pages/Login";
-import { Alert, Modal, Button } from "react-bootstrap";
-import { Text } from "@react-pdf/renderer";
 
 class App extends Component {
   constructor(props) {
@@ -152,7 +148,11 @@ class App extends Component {
     this.loadData();
   };
   getSalesByDate = async (from, to) => {
-    const sales = await this.db.getSalesByDate(from.getTime(), to.getTime());
+    const sales = await this.db.getSalesByDate(
+      from.getTime(),
+      to.getTime(),
+      this.state.selectedStore
+    );
     sales
       ? this.setState({
           sales: sales,
@@ -163,38 +163,47 @@ class App extends Component {
     // console.log(sales);
   };
   getCustomerOrders = async (customer, from, to) => {
-    const orders = await this.db.getCustomerOrders(
-      customer,
-      from.getTime(),
-      to.getTime()
-    );
+    const orders = await this.db.getCustomerOrders(customer, from, to);
+    return orders;
+  };
+  getSellerOrders = async (seller, from, to) => {
+    const orders = await this.db.getSellerOrders(seller, from, to);
     // console.log(orders);
     return orders;
   };
   makePurchase = async (bill) => {
-    await this.db.makePurchase(bill);
+    await this.db.makePurchase(bill, this.state.selectedStore);
     this.loadData();
     // console.log(store);
   };
   makeSales = async (bill) => {
     // this.printInvoice(1343566);
     // return;
-    const invoice = await this.db.makeSales(bill);
+    const { invoice } = await this.db.makeSales(bill, this.state.selectedStore);
     // this.setState({
-    //   invoice: invoice
-    // })
-
+    //   invoice: invoice,
+    // });
+    // console.log(invoice);
     return invoice;
     // if (invoice) this.comfirmPrint(invoice);
     // console.log(store);
   };
-  comfirmPrint = async (invoice) => {
-    this.setState({
-      invoice: invoice,
-    });
+  // comfirmPrint = async (invoice) => {
+  //   console.log(this.state.invoice);
+  //   this.setState({
+  //     invoice: invoice,
+  //   });
+  //   console.log(this.state.invoice);
+  //   window.location.href = window.location.href.replace("Sales", "Invoice");
+  //   console.log(this.state.invoice);
+  // };
+  getInvoice = async (saleID) => {
+    const { invoice } = await this.db.getInvoice(saleID);
+    // console.log(invoice);
+    return invoice;
   };
   storeProducts = (store) => {
-    console.log("item" + this.state.store[0]);
+    // console.log("item" + this.state.store[0]);
     return this.state.store[0];
   };
   printInvoice = () => {
@@ -206,6 +215,7 @@ class App extends Component {
     //   document.getElementById("invoice")
     // );
   };
+
   logout = () => {
     this.setState({
       isLogin: false,
@@ -335,7 +345,8 @@ class App extends Component {
               customers={this.state.customers}
               stores={this.stores}
               store={this.state.store}
-              comfirmPrint={this.comfirmPrint}
+              loadData={this.loadData}
+              // comfirmPrint={this.comfirmPrint}
               makeSales={this.makeSales}
               isAdmin={this.state.isAdmin}
             />
@@ -386,6 +397,7 @@ class App extends Component {
               sales={this.state.sales}
               purchase={this.state.purchase}
               getCustomerOrders={this.getCustomerOrders}
+              getSellerOrders={this.getSellerOrders}
               getSalesByDate={this.getSalesByDate}
               isAdmin={this.state.isAdmin}
             />
@@ -410,7 +422,7 @@ class App extends Component {
           path="/Invoice"
           exact
           component={(props) => (
-            <MyInvoice {...props} invoice={this.state.invoice} />
+            <MyInvoice {...props} getInvoice={this.getInvoice} />
           )}
         />
       </Switch>

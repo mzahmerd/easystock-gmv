@@ -12,11 +12,13 @@ import ReportNav from "../components/ReportNav";
 
 export default class Report extends Component {
   state = {
-    from: null,
-    to: null,
+    from: 0,
+    to: 0,
     report: "Sales",
-    customer: "",
+    customer: Object.values(this.props.customers)[0].name,
     customerOrders: { items: {}, total: 0, paid: 0 },
+    seller: Object.values(this.props.sellers)[0].name,
+    sellerOrders: { items: {}, total: 0, paid: 0 },
   };
 
   switchReport = (report) => {
@@ -138,31 +140,8 @@ export default class Report extends Component {
     );
   };
   customersReport = () => {
-    const headers = ["Product", "Quantity", "Amount", "Date"];
+    const headers = ["Product", "Quantity", "Price", "Amount", "Date", "Store"];
     const customers = Object.values(this.props.customers);
-
-    // console.log(items);
-
-    let products = {};
-    // items.map((p) => {
-    //   if (!products[p.product]) {
-    //     products[p.product] = {
-    //       product: p.product,
-    //       qty: Number.parseInt(p.qty),
-    //       amount: p.price * p.qty,
-    //     };
-    //   } else {
-    //     products = {
-    //       ...products,
-    //       [p.product]: {
-    //         product: p.product,
-    //         qty:
-    //           Number.parseInt(products[p.product].qty) + Number.parseInt(p.qty),
-    //         amount: products[p.product].amount + p.qty * p.price,
-    //       },
-    //     };
-    //   }
-    // });
     const updateCustomer = (evt) => {
       this.setState({
         customer: evt.target.value,
@@ -175,7 +154,6 @@ export default class Report extends Component {
         this.state.to
       );
 
-      // console.log(items);
       if (items)
         this.setState({
           customerOrders: {
@@ -259,31 +237,8 @@ export default class Report extends Component {
     );
   };
   sellersReport = () => {
-    const headers = ["Product", "Quantity", "Amount", "Date"];
+    const headers = ["Product", "Quantity", "Rate", "Amount", "Date", "Store"];
     const sellers = Object.values(this.props.sellers);
-
-    // console.log(items);
-
-    let products = {};
-    // items.map((p) => {
-    //   if (!products[p.product]) {
-    //     products[p.product] = {
-    //       product: p.product,
-    //       qty: Number.parseInt(p.qty),
-    //       amount: p.price * p.qty,
-    //     };
-    //   } else {
-    //     products = {
-    //       ...products,
-    //       [p.product]: {
-    //         product: p.product,
-    //         qty:
-    //           Number.parseInt(products[p.product].qty) + Number.parseInt(p.qty),
-    //         amount: products[p.product].amount + p.qty * p.price,
-    //       },
-    //     };
-    //   }
-    // });
     const updateSeller = (evt) => {
       this.setState({
         seller: evt.target.value,
@@ -296,7 +251,6 @@ export default class Report extends Component {
         this.state.to
       );
 
-      // console.log(items);
       this.setState({
         sellerOrders: {
           items: items,
@@ -369,7 +323,7 @@ export default class Report extends Component {
           </Form>
         </Col>
         <Col className="mb-4 mr-sm-2">
-          <COTable
+          <SOTable
             type="co"
             headers={headers}
             tableData={Object.values(this.state.sellerOrders.items)}

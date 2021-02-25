@@ -7,6 +7,7 @@ import { Text } from "@react-pdf/renderer";
 export default class Sales extends Component {
   state = {
     modalOpen: false,
+    saleID: 0,
     customers: Object.values(this.props.customers),
     products: Object.values(this.props.store.products),
     inStore: this.getFirstObj(this.props.store.products).qty,
@@ -97,7 +98,6 @@ export default class Sales extends Component {
     const selectedIndex = evt.target.options.selectedIndex;
     const id = evt.target.options[selectedIndex].getAttribute("id");
     const { customers } = this.state;
-
     this.setState({
       balance: customers[id].orders - customers[id].paid,
       lastBalance: customers[id].lastBalance,
@@ -105,7 +105,7 @@ export default class Sales extends Component {
     });
   };
 
-  handleMakeSales = () => {
+  handleMakeSales = async () => {
     const bill = {
       createdAt: Date.now(),
       user: localStorage.getItem("username"),
@@ -116,43 +116,38 @@ export default class Sales extends Component {
       products: Object.values(this.state.inCart),
     };
     // console.log(bill);
-    const invoice = this.props.makeSales(bill);
-    console.log(invoice);
-    // if (invoice) this.handleOpen();
-    this.setState({
-      invoice: invoice,
-    });
+    await this.props.makeSales(bill);
+    // console.log(invoice);
+    this.handleOpen(bill.createdAt);
+    // this.setState({
+    //   invoice: invoice,
+    // });
   };
-  handleOpen = () => {
+  handleOpen = (saleID) => {
     this.setState({
       modalOpen: true,
+      saleID: saleID,
     });
   };
   handleClose = () => {
     this.setState({
       modalOpen: false,
+      saleID: 0,
     });
+    this.props.loadData();
+    // window.location.reload();
   };
   printInvoice = () => {
-    console.log(this.state.invoice);
-    this.props.comfirmPrint(this.state.invoice);
-    // console.log(window.location.href.replace("Sales", "Invoice"));
-    // window.location.href = window.location.href.replace("Sales", "Invoice");
-    // location.href = "http://localhost:3000/Invoice";
+    localStorage["saleID"] = this.state.saleID;
+    window.location.href = window.location.href.replace("Sales", "Invoice");
   };
   render() {
-    // console.log(this.getFirstObj(this.props.customers));
-
     const headers = ["Name", "Quantity", "Price", "Total", "Action"];
 
     return (
       <>
         <Container>
-          <Modal
-            show={this.state.modalOpen}
-            onHide={this.handleClose}
-            // onHide={this.setState({ modalOpen: false })}
-          >
+          <Modal show={this.state.modalOpen} onHide={this.handleClose}>
             <Modal.Body>
               <Text> Bill Created Successfully</Text>
             </Modal.Body>

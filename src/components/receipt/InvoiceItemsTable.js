@@ -22,7 +22,7 @@ const InvoiceItemsTable = ({ invoice }) => (
     <InvoiceTableHeader />
     <InvoiceTableRow items={invoice.items} />
     {/* <InvoiceTableBlankSpace rowsCount={tableRowsCount - invoice.items.length} /> */}
-    <InvoiceTableFooter items={invoice.items} />
+    <InvoiceTableFooter total={invoice.total} paid={invoice.paid} />
   </View>
 );
 

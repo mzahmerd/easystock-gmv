@@ -1,6 +1,6 @@
 import React from "react";
 import { Table } from "react-bootstrap";
-import { formatMoney } from "../util";
+import { formatMoney, convertDate } from "../util";
 
 function SOTable(props) {
   const renderContent = () => {
@@ -8,7 +8,10 @@ function SOTable(props) {
       <tr key={id}>
         <td> {rows.product}</td>
         <td> {rows.qty}</td>
+        <td> {rows.rate}</td>
         <td>&#8358; {formatMoney(rows.qty * rows.rate)}</td>
+        <td> {rows.createdAt ? convertDate(rows.createdAt) : ""} </td>
+        <td> {rows.store}</td>
       </tr>
     ));
   };
