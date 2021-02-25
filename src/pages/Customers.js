@@ -81,6 +81,7 @@ export default class Customers extends Component {
             />
             <Button
               variant="primary"
+              disabled={!this.state.customer.name}
               onClick={this.handleAddCustomer}
               className="mb-2"
             >
@@ -116,6 +117,7 @@ export default class Customers extends Component {
               />
               <Button
                 variant="primary"
+                disabled={!(this.state.cash || this.state.transfer)}
                 onClick={this.handleAddDeposit}
                 className="mb-2"
               >

@@ -1,17 +1,21 @@
 import React, { Component } from "react";
-import { Row, Container, Form, Button, Col } from "react-bootstrap";
+import { Row, Container, Form, Button, Col, Modal } from "react-bootstrap";
 import SalesTable from "../components/SalesTable";
-import { formatMoney } from "../util";
-import { object } from "prop-types";
+import { formatMoney, convertDate } from "../util";
+import { Text } from "@react-pdf/renderer";
 
 export default class Sales extends Component {
   state = {
+    modalOpen: false,
+    saleID: 0,
     customers: Object.values(this.props.customers),
     products: Object.values(this.props.store.products),
     inStore: this.getFirstObj(this.props.store.products).qty,
     inCart: {},
+    invoice: {},
     customer: this.getFirstObj(this.props.customers).name,
-    lastBalance:
+    lastBalance: this.getFirstObj(this.props.customers).lastBalance,
+    balance:
       this.getFirstObj(this.props.customers).orders -
       this.getFirstObj(this.props.customers).paid,
 
@@ -94,14 +98,14 @@ export default class Sales extends Component {
     const selectedIndex = evt.target.options.selectedIndex;
     const id = evt.target.options[selectedIndex].getAttribute("id");
     const { customers } = this.state;
-
     this.setState({
-      lastBalance: customers[id].orders - customers[id].paid,
+      balance: customers[id].orders - customers[id].paid,
+      lastBalance: customers[id].lastBalance,
       customer: evt.target.value,
     });
   };
 
-  handleMakeSales = () => {
+  handleMakeSales = async () => {
     const bill = {
       createdAt: Date.now(),
       user: localStorage.getItem("username"),
@@ -112,16 +116,50 @@ export default class Sales extends Component {
       products: Object.values(this.state.inCart),
     };
     // console.log(bill);
-    this.props.makeSales(bill);
+    await this.props.makeSales(bill);
+    // console.log(invoice);
+    this.handleOpen(bill.createdAt);
+    // this.setState({
+    //   invoice: invoice,
+    // });
+  };
+  handleOpen = (saleID) => {
+    this.setState({
+      modalOpen: true,
+      saleID: saleID,
+    });
+  };
+  handleClose = () => {
+    this.setState({
+      modalOpen: false,
+      saleID: 0,
+    });
+    this.props.loadData();
+    // window.location.reload();
+  };
+  printInvoice = () => {
+    localStorage["saleID"] = this.state.saleID;
+    window.location.href = window.location.href.replace("Sales", "Invoice");
   };
   render() {
-    // console.log(this.getFirstObj(this.props.customers));
-
     const headers = ["Name", "Quantity", "Price", "Total", "Action"];
 
     return (
       <>
         <Container>
+          <Modal show={this.state.modalOpen} onHide={this.handleClose}>
+            <Modal.Body>
+              <Text> Bill Created Successfully</Text>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={this.printInvoice}>
+                Print Invoice
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <Row style={{ margin: 20 + "px" }}>
             <Col className="mb-2 mr-sm-2" bsPrefix>
               <Form>
@@ -186,7 +224,11 @@ export default class Sales extends Component {
                   value={this.state.product.qty}
                   onChange={this.updateProduct}
                 />
-                <Button className="m-2" onClick={this.addToCart}>
+                <Button
+                  className="m-2"
+                  disabled={!this.state.product.qty}
+                  onClick={this.addToCart}
+                >
                   Add
                 </Button>{" "}
                 <Container className="mt-lg-5 ml-0">
@@ -214,8 +256,12 @@ export default class Sales extends Component {
                         placeholder="Credit"
                         readOnly={true}
                       />
-                      <Button variant="primary" onClick={this.handleMakeSales}>
-                        Save
+                      <Button
+                        variant="primary"
+                        disabled={!this.state.total}
+                        onClick={this.handleMakeSales}
+                      >
+                        Submit
                       </Button>
                     </Col>
                   </Row>
@@ -223,14 +269,24 @@ export default class Sales extends Component {
               </Form>
             </Col>
             <Col className="mb-5 mr-sm-2">
-              <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
-              <Form.Control
-                disabled
-                className="mb-2 mr-sm-2 "
-                id="last_balance"
-                name="last_balance"
-                value={formatMoney(this.state.lastBalance)}
-              />
+              <Row>
+                <Form.Label htmlFor="last_balance">Last Balance</Form.Label>
+                <Form.Control
+                  disabled
+                  className="mb-2 mr-sm-2 "
+                  id="last_balance"
+                  name="last_balance"
+                  value={convertDate(this.state.lastBalance)}
+                />
+                <Form.Label htmlFor="balance">Balance</Form.Label>
+                <Form.Control
+                  disabled
+                  className="mb-2 mr-sm-2 "
+                  id="balance"
+                  name="balance"
+                  value={formatMoney(this.state.balance)}
+                />
+              </Row>
               <SalesTable
                 headers={headers}
                 tableData={Object.values(this.state.inCart)}

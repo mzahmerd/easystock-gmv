@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
-
 import "./App.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -11,11 +9,10 @@ import Purchase from "./pages/Purchase";
 import Customers from "./pages/Customers";
 import Sellers from "./pages/Sellers";
 import Users from "./pages/Users";
-import Invoice from "./pages/Invoice";
+import MyInvoice from "./pages/MyInvoice";
 
 import DB from "./db";
 import Login from "./pages/Login";
-import { Alert } from "react-bootstrap";
 
 class App extends Component {
   constructor(props) {
@@ -29,7 +26,9 @@ class App extends Component {
     // });
     this.state = {
       loading: true,
+      modalOpen: false,
       selectedStore: "main",
+      invoice: {},
       stores: {},
       store: {},
       products: {},
@@ -42,6 +41,7 @@ class App extends Component {
       username: localStorage.getItem("username"),
       isAdmin: this.toBool(localStorage.getItem("isAdmin")),
     };
+    // console.log(localStorage["username"]);
   }
   loadData = async () => {
     const stores = await this.db.getStores();
@@ -148,7 +148,11 @@ class App extends Component {
     this.loadData();
   };
   getSalesByDate = async (from, to) => {
-    const sales = await this.db.getSalesByDate(from.getTime(), to.getTime());
+    const sales = await this.db.getSalesByDate(
+      from.getTime(),
+      to.getTime(),
+      this.state.selectedStore
+    );
     sales
       ? this.setState({
           sales: sales,
@@ -158,37 +162,64 @@ class App extends Component {
         });
     // console.log(sales);
   };
+  getUserSales = async (user, from, to) => {
+    const orders = await this.db.getUserSales(user, from, to);
+    return orders;
+  };
   getCustomerOrders = async (customer, from, to) => {
-    const orders = await this.db.getCustomerOrders(
-      customer,
-      from.getTime(),
-      to.getTime()
-    );
+    const orders = await this.db.getCustomerOrders(customer, from, to);
+    return orders;
+  };
+  getSellerOrders = async (seller, from, to) => {
+    const orders = await this.db.getSellerOrders(seller, from, to);
     // console.log(orders);
     return orders;
   };
   makePurchase = async (bill) => {
-    await this.db.makePurchase(bill);
+    await this.db.makePurchase(bill, this.state.selectedStore);
     this.loadData();
     // console.log(store);
   };
   makeSales = async (bill) => {
     // this.printInvoice(1343566);
     // return;
-    await this.db.makeSales(bill);
-    this.loadData();
+    const { invoice } = await this.db.makeSales(bill, this.state.selectedStore);
+    // this.setState({
+    //   invoice: invoice,
+    // });
+    // console.log(invoice);
+    return invoice;
+    // if (invoice) this.comfirmPrint(invoice);
     // console.log(store);
   };
+  // comfirmPrint = async (invoice) => {
+  //   console.log(this.state.invoice);
+  //   this.setState({
+  //     invoice: invoice,
+  //   });
+  //   console.log(this.state.invoice);
+  //   window.location.href = window.location.href.replace("Sales", "Invoice");
+  //   console.log(this.state.invoice);
+  // };
+  getInvoice = async (saleID) => {
+    const { invoice } = await this.db.getInvoice(saleID);
+    // console.log(invoice);
+    return invoice;
+  };
   storeProducts = (store) => {
-    console.log("item" + this.state.store[0]);
+    // console.log("item" + this.state.store[0]);
     return this.state.store[0];
   };
-  printInvoice = (saleId) => {
-    ReactDOM.render(
-      <Invoice saleId={saleId} />,
-      document.getElementById("invoice")
-    );
+  printInvoice = () => {
+    this.setState({
+      printing: true,
+    });
+    // ReactDOM.render(
+    //   <MyInvoice saleId={saleId} />,
+    //   document.getElementById("invoice")
+    // );
   };
+
   logout = () => {
     this.setState({
       isLogin: false,
@@ -242,7 +273,8 @@ class App extends Component {
     // if (await this.db.login(user)) {
     //   this.loadData();
     // }
-    let exist = this.state.users[`users:${user.username}`];
+    let exist = await this.state.users[`users:${user.username}`];
+    // console.log(user);
     if (exist) {
       if (exist.password === user.password) {
         localStorage.setItem("isAdmin", !!exist.isAdmin);
@@ -275,6 +307,7 @@ class App extends Component {
             selectedStore={this.state.selectedStore}
             changeStore={this.changeStore}
           />
+
           <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
         </Router>
       );
@@ -317,6 +350,8 @@ class App extends Component {
               customers={this.state.customers}
               stores={this.stores}
               store={this.state.store}
+              loadData={this.loadData}
+              // comfirmPrint={this.comfirmPrint}
               makeSales={this.makeSales}
               isAdmin={this.state.isAdmin}
             />
@@ -364,9 +399,12 @@ class App extends Component {
               {...props}
               sellers={this.state.sellers}
               customers={this.state.customers}
+              users={this.state.users}
               sales={this.state.sales}
               purchase={this.state.purchase}
+              getUserSales={this.getUserSales}
               getCustomerOrders={this.getCustomerOrders}
+              getSellerOrders={this.getSellerOrders}
               getSalesByDate={this.getSalesByDate}
               isAdmin={this.state.isAdmin}
             />
@@ -390,7 +428,9 @@ class App extends Component {
         <Route
           path="/Invoice"
           exact
-          component={(props) => <Invoice {...props} salesId={123345657765} />}
+          component={(props) => (
+            <MyInvoice {...props} getInvoice={this.getInvoice} />
+          )}
         />
       </Switch>
     );

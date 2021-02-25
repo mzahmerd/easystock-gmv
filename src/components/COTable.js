@@ -3,15 +3,17 @@ import { Table } from "react-bootstrap";
 import { formatMoney, convertDate } from "../util";
 
 function COTable(props) {
-  console.log(props.tableData);
+  // console.log(props.tableData);
   const renderContent = () => {
     return props.tableData.map((rows, id) => (
       <tr key={id}>
         {/* <td>{rows.createdAt}</td> */}
         <td> {rows.product}</td>
         <td> {rows.qty}</td>
+        <td> {rows.price}</td>
         <td>&#8358; {formatMoney(rows.qty * rows.price)}</td>
         <td> {rows.createdAt ? convertDate(rows.createdAt) : ""} </td>
+        <td> {rows.store}</td>
       </tr>
     ));
   };

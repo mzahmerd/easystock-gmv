@@ -10,18 +10,28 @@ import { Button, Modal, Form } from "react-bootstrap";
 function Navbar(props) {
   const [sidebar, setSidebar] = useState(false);
   const [store, setStore] = useState(props.selectedStore);
+  const [billNo, setBillNo] = useState(0);
   const showSidebar = () => setSidebar(!sidebar);
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
+  const [showPrint, setShowPrint] = useState(false);
+  const handleShowPrint = () => setShowPrint(true);
+  const handleClosePrint = () => setShowPrint(false);
+
   const { stores } = props;
   // console.log(stores);
   const handleChangeStore = (evt) => setStore(evt.target.value);
-
+  const handleChangeBillNo = (evt) => setBillNo(evt.target.value);
   const switchStore = () => {
     // console.log(store);
     props.changeStore(store);
     handleClose();
+  };
+  const printInvoice = () => {
+    localStorage["saleID"] = billNo;
+    // console.log(window.location.host + "/Invoice");
+    window.location.href = "http://" + window.location.host + "/Invoice";
   };
   const logout = () => {
     localStorage.clear();
@@ -60,13 +70,40 @@ function Navbar(props) {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Modal show={showPrint} onHide={handleClosePrint}>
+        <Modal.Header closeButton>
+          <Modal.Title> Input Bill No </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form inline>
+            <Form.Control
+              className="mb-2 mr-sm-2"
+              id="bill_no"
+              name="bill_no"
+              value={billNo}
+              onChange={handleChangeBillNo}
+              placeholder="Bill No"
+            />
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClosePrint}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={printInvoice}>
+            Print
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div className="navbar">
           <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <h2 style={{ color: "white" }}>{props.selectedStore}</h2>
-
+          <Link to="#" className="store-bars">
+            <FaIcons.FaPrint onClick={handleShowPrint} />
+          </Link>
           <Link to="#" className="store-bars">
             <FaIcons.FaStore onClick={handleShow} />
           </Link>

@@ -81,6 +81,7 @@ export default class Sellers extends Component {
             />
             <Button
               variant="primary"
+              disabled={!this.state.seller.name}
               onClick={this.handleAddSeller}
               className="mb-2"
             >
@@ -117,6 +118,7 @@ export default class Sellers extends Component {
               <Button
                 variant="primary"
                 onClick={this.handleAddWithdrawl}
+                disabled={!(this.state.cash || this.state.transfer)}
                 className="mb-2"
               >
                 Deposit

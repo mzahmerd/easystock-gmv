@@ -1,18 +1,21 @@
 import React from "react";
 import * as FaIcons from "react-icons/fa";
-import * as AiIcons from "react-icons/ai";
-import * as FcIcons from "react-icons/fc";
 import * as BsIcons from "react-icons/bs";
 import * as IoIcons from "react-icons/io";
 
 export const ReportNavData = (isAdmin) => {
-  console.log(isAdmin);
   return isAdmin
     ? [
         {
           title: "Sales",
           path: "/Report",
           icon: <FaIcons.FaShoppingCart />,
+          cName: "nav-text",
+        },
+        {
+          title: "Users",
+          path: "/Report",
+          icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
 
@@ -24,7 +27,7 @@ export const ReportNavData = (isAdmin) => {
         },
         {
           title: "Sellers",
-          path: "/Report/Sellers",
+          path: "/Report",
           icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
@@ -37,9 +40,9 @@ export const ReportNavData = (isAdmin) => {
       ]
     : [
         {
-          title: "Sales",
+          title: "Users",
           path: "/Report",
-          icon: <FaIcons.FaShoppingCart />,
+          icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
 
