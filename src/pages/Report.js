@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { formatMoney } from "../util";
 import ReportNav from "../components/ReportNav";
+import CTTable from "../components/CTTable";
 
 export default class Report extends Component {
   state = {
@@ -25,6 +26,7 @@ export default class Report extends Component {
       ? localStorage["username"]
       : Object.values(this.props.users)[0].username,
     userSales: { items: {}, total: 0, paid: 0 },
+    deposits: {},
   };
 
   switchReport = (report) => {
@@ -49,6 +51,9 @@ export default class Report extends Component {
     }
     if (this.state.report === "Users") {
       return this.usersReport();
+    }
+    if (this.state.report === "Transactions") {
+      return this.depositReport();
     }
   };
   render() {
@@ -515,6 +520,106 @@ export default class Report extends Component {
             type="co"
             headers={headers}
             tableData={Object.values(this.state.sellerOrders.items)}
+          />
+        </Col>
+      </Row>
+    );
+  };
+  depositReport = () => {
+    const headers = [
+      "Customer",
+      "Cash",
+      "Transfer",
+      "Amount",
+      "Date",
+      "Cashier",
+    ];
+    const customers = Object.values(this.props.customers);
+    const updateCustomer = (evt) => {
+      this.setState({
+        customer: evt.target.value,
+      });
+    };
+    const handleDepositFilter = async () => {
+      const { deposits } = await this.props.getDeposits(
+        this.state.customer,
+        this.state.from,
+        this.state.to
+      );
+      // console.log(deposits);
+      if (deposits)
+        this.setState({
+          deposits: deposits,
+        });
+    };
+    return (
+      <Row style={{ margin: 20 + "px" }}>
+        <Col className="mb-5 mr-sm-4" bsPrefix>
+          <Form>
+            <Form.Control
+              as="select"
+              className="mb-2 mr-sm-2"
+              id="sel_customer"
+              custom
+              name="customer"
+              onChange={updateCustomer}
+            >
+              {customers.map((s, index) => (
+                <option key={index} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </Form.Control>
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.from}
+              onChange={(date) => this.setState({ from: date })}
+            />{" "}
+            <br />
+            <br />
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={this.state.to}
+              onChange={(date) => this.setState({ to: date })}
+            />
+            <br />
+            <br />
+            <Button className="float-right" onClick={handleDepositFilter}>
+              Search
+            </Button>
+            <br />
+            <br />
+            <br />
+            <Form.Label htmlFor="total_sales">Total Sales</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="total_sales"
+              value={formatMoney(this.state.customerOrders.total)}
+            />
+            <Form.Label htmlFor="credit">Paid</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="credit"
+              value={formatMoney(this.state.customerOrders.paid)}
+            />
+            <Form.Label htmlFor="balance">Balance</Form.Label>
+            <Form.Control
+              disabled
+              className="mb-2 mr-sm-2"
+              id="balance"
+              value={formatMoney(
+                this.state.customerOrders.total - this.state.customerOrders.paid
+              )}
+            />
+          </Form>
+        </Col>
+        <Col className="mb-4 mr-sm-2">
+          <CTTable
+            type="ct"
+            headers={headers}
+            tableData={Object.values(this.state.deposits)}
           />
         </Col>
       </Row>

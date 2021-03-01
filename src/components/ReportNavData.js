@@ -31,6 +31,12 @@ export const ReportNavData = (isAdmin) => {
           icon: <IoIcons.IoMdPersonAdd />,
           cName: "nav-text",
         },
+        {
+          title: "Transactions",
+          path: "/Report",
+          icon: <IoIcons.IoMdCash />,
+          cName: "nav-text",
+        },
         // {
         //   title: "Users",
         //   path: "/Report/Users",

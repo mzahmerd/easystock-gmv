@@ -1,6 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 import { BsTrash } from "react-icons/bs";
+import { formatMoney } from "../util";
 
 function SalesTable(props) {
   const removeItem = (evt) => {
@@ -20,8 +21,8 @@ function SalesTable(props) {
           <tr key={id}>
             <td>{rows.name}</td>
             <td>{rows.qty}</td>
-            <td>{rows.price}</td>
-            <td>{rows.price * rows.qty}</td>
+            <td>{formatMoney(rows.price)}</td>
+            <td>{formatMoney(rows.price * rows.qty)}</td>
             <td>
               <BsTrash color="red" size={20} id={id} onClick={removeItem} />
             </td>

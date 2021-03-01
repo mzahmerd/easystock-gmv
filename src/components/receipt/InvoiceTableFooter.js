@@ -1,28 +1,31 @@
 import React from "react";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { formatMoney } from "../../util";
 
-const borderColor = "#90e5fc";
+// const borderColor = "#90e5fc";
+const borderColor = "#00000";
+
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    borderBottomColor: "#bff0fd",
+    borderBottomColor: "#000000",
     borderBottomWidth: 1,
     alignItems: "center",
-    height: 24,
+    height: 20,
     fontSize: 12,
     fontStyle: "bold",
   },
   description: {
-    width: "85%",
-    textAlign: "right",
+    width: "20%",
+    textAlign: "left",
     borderRightColor: borderColor,
     borderRightWidth: 1,
-    paddingRight: 8,
+    paddingLeft: 8,
   },
-  total: {
-    width: "15%",
-    textAlign: "right",
-    paddingRight: 8,
+  amount: {
+    width: "80%",
+    textAlign: "left",
+    paddingLeft: 8,
   },
 });
 
@@ -34,18 +37,16 @@ const InvoiceTableFooter = ({ total, paid }) => {
   return (
     <>
       <View style={styles.row}>
-        <Text style={styles.description}>TOTAL</Text>
-        <Text style={styles.total}>{Number.parseFloat(total).toFixed(2)}</Text>
+        <Text style={styles.description}>Total</Text>
+        <Text style={styles.amount}>{formatMoney(total)}</Text>
       </View>
       <View style={styles.row}>
-        <Text style={styles.description}>PAID</Text>
-        <Text style={styles.total}>{Number.parseFloat(paid).toFixed(2)}</Text>
+        <Text style={styles.description}>Paid</Text>
+        <Text style={styles.amount}>{formatMoney(paid)}</Text>
       </View>
       <View style={styles.row}>
-        <Text style={styles.description}>BAL</Text>
-        <Text style={styles.total}>
-          {Number.parseFloat(total - paid).toFixed(2)}
-        </Text>
+        <Text style={styles.description}>Balance</Text>
+        <Text style={styles.amount}>{formatMoney(total - paid)}</Text>
       </View>
     </>
   );

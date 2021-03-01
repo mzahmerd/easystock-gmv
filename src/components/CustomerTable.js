@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "react-bootstrap";
+import { formatMoney } from "../util";
 
 function CustomerTable(props) {
   const handleCustomerClick = (evt) => {
@@ -21,9 +22,9 @@ function CustomerTable(props) {
               {rows.name}
             </td>
             <td>{rows.phone}</td>
-            <td>{rows.orders}</td>
-            <td>{rows.paid}</td>
-            <td>{rows.orders - rows.paid}</td>
+            <td>&#8358; {formatMoney(rows.orders)}</td>
+            <td>&#8358; {formatMoney(rows.paid)}</td>
+            <td>&#8358; {formatMoney(rows.orders - rows.paid)}</td>
           </tr>
         ))}
       </tbody>
