@@ -710,12 +710,12 @@ export default class DB {
   getDeposits = async (customer, from, to) => {
     if (from) from = from.getTime();
     if (to) to = to.getTime();
-    // let orders = {
-    //   total: 0,
-    //   paid: 0,
-    // };
-    // let items = [];
-    let deposits = {};
+
+    let deposits = {
+      cash: 0,
+      transfer: 0,
+    };
+    let items = [];
     let selector = {
       type: "deposit",
     };
@@ -738,8 +738,10 @@ export default class DB {
       })
       .then(function (result) {
         result.docs.forEach((dep) => {
-          deposits = dep;
-          // console.log(s.store);
+          deposits.cash += dep.cash;
+          deposits.transfer += dep.transfer;
+          items.push(dep);
+          // console.log(dep);
         });
 
         // yo, a result
@@ -748,6 +750,7 @@ export default class DB {
         console.log(err);
         // ouch, an error
       });
+    deposits.items = items;
     // console.log(deposits);
     return deposits;
   };

@@ -169,7 +169,7 @@ class App extends Component {
   getDeposits = async (customer, from, to) => {
     const deposits = await this.db.getDeposits(customer, from, to);
     // console.log(deposits);
-    return { deposits };
+    return deposits;
   };
   getCustomerOrders = async (customer, from, to) => {
     const orders = await this.db.getCustomerOrders(customer, from, to);

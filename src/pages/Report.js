@@ -26,7 +26,7 @@ export default class Report extends Component {
       ? localStorage["username"]
       : Object.values(this.props.users)[0].username,
     userSales: { items: {}, total: 0, paid: 0 },
-    deposits: {},
+    deposits: { items: {}, cash: 0, transfer: 0 },
   };
 
   switchReport = (report) => {
@@ -531,8 +531,8 @@ export default class Report extends Component {
       "Cash",
       "Transfer",
       "Amount",
-      "Date",
       "Cashier",
+      "Date",
     ];
     const customers = Object.values(this.props.customers);
     const updateCustomer = (evt) => {
@@ -541,15 +541,19 @@ export default class Report extends Component {
       });
     };
     const handleDepositFilter = async () => {
-      const { deposits } = await this.props.getDeposits(
+      const { items, cash, transfer } = await this.props.getDeposits(
         this.state.customer,
         this.state.from,
         this.state.to
       );
       // console.log(deposits);
-      if (deposits)
+      if (items)
         this.setState({
-          deposits: deposits,
+          deposits: {
+            items: items,
+            cash: cash,
+            transfer: transfer,
+          },
         });
     };
     return (
@@ -590,27 +594,27 @@ export default class Report extends Component {
             <br />
             <br />
             <br />
-            <Form.Label htmlFor="total_sales">Total Sales</Form.Label>
+            <Form.Label htmlFor="total_sales">Total Cash</Form.Label>
             <Form.Control
               disabled
               className="mb-2 mr-sm-2"
               id="total_sales"
-              value={formatMoney(this.state.customerOrders.total)}
+              value={formatMoney(this.state.deposits.cash)}
             />
-            <Form.Label htmlFor="credit">Paid</Form.Label>
+            <Form.Label htmlFor="credit">Total Transfer</Form.Label>
             <Form.Control
               disabled
               className="mb-2 mr-sm-2"
               id="credit"
-              value={formatMoney(this.state.customerOrders.paid)}
+              value={formatMoney(this.state.deposits.transfer)}
             />
-            <Form.Label htmlFor="balance">Balance</Form.Label>
+            <Form.Label htmlFor="balance">Total Amount</Form.Label>
             <Form.Control
               disabled
               className="mb-2 mr-sm-2"
               id="balance"
               value={formatMoney(
-                this.state.customerOrders.total - this.state.customerOrders.paid
+                this.state.deposits.cash - this.state.deposits.transfer
               )}
             />
           </Form>
@@ -619,7 +623,7 @@ export default class Report extends Component {
           <CTTable
             type="ct"
             headers={headers}
-            tableData={Object.values(this.state.deposits)}
+            tableData={Object.values(this.state.deposits.items)}
           />
         </Col>
       </Row>
