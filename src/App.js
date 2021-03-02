@@ -313,7 +313,7 @@ class App extends Component {
             changeStore={this.changeStore}
           />
 
-          <div style={{ marginLeft: 0 + "px" }}>{this.renderContent()}</div>
+          <div className="content">{this.renderContent()}</div>
         </Router>
       );
     }

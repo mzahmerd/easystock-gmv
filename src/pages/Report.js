@@ -65,6 +65,7 @@ export default class Report extends Component {
         <ReportNav
           isAdmin={this.props.isAdmin}
           switchReport={this.switchReport}
+          report={this.state.report}
         />
       </>
     );

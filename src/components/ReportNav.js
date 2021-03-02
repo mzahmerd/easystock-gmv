@@ -28,7 +28,11 @@ function ReportNav(props) {
           {ReportNavData(props.isAdmin).map((item, index) => {
             return (
               <li key={index} className={item.cName}>
-                <Link onClick={handleSwitch} to={item.path}>
+                <Link
+                  onClick={handleSwitch}
+                  className={item.title === props.report ? "active" : ""}
+                  to={item.path}
+                >
                   {item.icon}
                   <span>{item.title}</span>
                 </Link>

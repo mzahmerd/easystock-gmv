@@ -33,6 +33,7 @@ function Navbar(props) {
     // console.log(window.location.host + "/Invoice");
     window.location.href = "http://" + window.location.host + "/Invoice";
   };
+
   const logout = () => {
     localStorage.clear();
     props.logout();
@@ -100,13 +101,15 @@ function Navbar(props) {
           <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
-          <h2 style={{ color: "white" }}>{props.selectedStore}</h2>
+          <h2 className="dummy-store">{props.selectedStore}</h2>
+
           <Link to="#" className="store-bars">
             <FaIcons.FaPrint onClick={handleShowPrint} />
           </Link>
           <Link to="#" className="store-bars">
             <FaIcons.FaStore onClick={handleShow} />
           </Link>
+          <h2 style={{ color: "white" }}>{props.selectedStore}</h2>
         </div>
         <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
           <ul className="nav-menu-items" onClick={showSidebar}>
@@ -118,7 +121,12 @@ function Navbar(props) {
             {getSidebarData(props.isAdmin).map((item, index) => {
               return (
                 <li key={index} className={item.cName}>
-                  <Link to={item.path}>
+                  <Link
+                    to={item.path}
+                    className={
+                      window.location.pathname === item.path ? "active" : ""
+                    }
+                  >
                     {item.icon}
                     <span>{item.title}</span>
                   </Link>
