@@ -26,16 +26,24 @@ export default class Sales extends Component {
       qty: "",
       price: this.getFirstObj(this.props.store.products).price,
     },
-    paid: "",
+    cash: 0,
+    transfer: 0,
     credit: "",
   };
 
   getCredit = (evt) => {
+    let name = evt.target.name;
     this.setState({
-      paid: evt.target.value,
-      credit: this.state.total - evt.target.value,
+      [name]: evt.target.value,
+    });
+    this.setState((state, props) => {
+      return {
+        // [evt.target.name]: evt.target.value,
+        credit: state.total - parseInt(state.cash) - parseInt(state.transfer),
+      };
     });
   };
+
   getFirstObj(obj) {
     const [first] = Object.keys(obj);
     return obj[first];
@@ -90,7 +98,7 @@ export default class Sales extends Component {
     this.setState({
       product: {
         ...product,
-        [evt.target.name]: evt.target.value,
+        [evt.target.name]: parseInt(evt.target.value),
       },
     });
   };
@@ -112,7 +120,8 @@ export default class Sales extends Component {
       customer: this.state.customer,
       // store: this.state.store,
       total: this.state.total,
-      paid: this.state.paid,
+      cash: parseInt(this.state.cash),
+      transfer: parseInt(this.state.transfer),
       products: Object.values(this.state.inCart),
     };
     // console.log(bill);
@@ -234,16 +243,23 @@ export default class Sales extends Component {
                 <Container className="mt-lg-5 ml-0">
                   <Row>
                     <Col bsPrefix className=" right-align md-col-right">
-                      <Form.Label htmlFor="paid" srOnly>
-                        Paid
-                      </Form.Label>
+                      <Form.Label htmlFor="cash">cash Paid</Form.Label>
                       <Form.Control
                         className="mb-2 mr-sm-2"
-                        id="paid"
-                        name="paid"
-                        value={this.state.paid}
+                        id="cash"
+                        name="cash"
+                        value={this.state.cash}
                         onChange={this.getCredit}
-                        placeholder="Paid"
+                        placeholder="Cash"
+                      />
+                      <Form.Label htmlFor="transfer">Transfer</Form.Label>
+                      <Form.Control
+                        className="mb-2 mr-sm-2"
+                        id="transfer"
+                        name="transfer"
+                        value={this.state.transfer}
+                        onChange={this.getCredit}
+                        placeholder="Amount transfered"
                       />
                       <Form.Label htmlFor="credit" srOnly>
                         Credit

@@ -8,7 +8,7 @@ function SOTable(props) {
       <tr key={id}>
         <td> {rows.product}</td>
         <td> {rows.qty}</td>
-        <td> {rows.rate}</td>
+        <td>&#8358; {formatMoney(rows.rate)}</td>
         <td>&#8358; {formatMoney(rows.qty * rows.rate)}</td>
         <td> {rows.createdAt ? convertDate(rows.createdAt) : ""} </td>
         <td> {rows.store}</td>

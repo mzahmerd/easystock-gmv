@@ -177,6 +177,7 @@ export default class DB {
     const res = await this.db.put({
       ...customer,
       _id: `customers:${Date.now()}`,
+      lastBalance: Date.now(),
       type: "customer",
     });
     return res;
@@ -186,6 +187,7 @@ export default class DB {
     const res = await this.db.put({
       ...seller,
       _id: `sellers:${Date.now()}`,
+      lastBalance: Date.now(),
       type: "seller",
     });
     return res;
@@ -267,7 +269,7 @@ export default class DB {
     await this.db
       .get(customer._id)
       .then((doc) => {
-        doc.paid += cash + transfer;
+        doc.paid += parseInt(cash) + parseInt(transfer);
         if (doc.paid === doc.orders) doc.lastBalance = Date.now();
         return this.db.put(doc);
       })
@@ -278,8 +280,8 @@ export default class DB {
           createdAt: Date.now(),
           customer: customer.name,
           cashier: user,
-          cash: Number.parseInt(cash),
-          transfer: Number.parseInt(transfer),
+          cash: parseInt(cash),
+          transfer: parseInt(transfer),
         });
       })
       .then((doc) => {
@@ -295,29 +297,29 @@ export default class DB {
     await this.db
       .get(seller._id)
       .then((doc) => {
-        doc.paid += cash + transfer;
+        doc.paid += parseInt(cash) + parseInt(transfer);
+        if (doc.paid === doc.orders) doc.lastBalance = Date.now();
         return this.db.put(doc);
       })
       .then((_) => {
-        return this.db
-          .put({
-            _id: "withdrawal:" + Date.now(),
-            type: "withdrawal",
-            createdAt: Date.now(),
-            seller: seller.name,
-            cashier: user,
-            cash: cash,
-            transfer: transfer,
-          })
-          .then((res) => {
-            // console.log(doc);
-            return res;
-          });
+        return this.db.put({
+          _id: "withdrawal:" + Date.now(),
+          type: "withdrawal",
+          createdAt: Date.now(),
+          seller: seller.name,
+          cashier: user,
+          cash: parseInt(cash),
+          transfer: parseInt(transfer),
+        });
+      })
+      .then((doc) => {
+        // console.log(doc);
+        return doc;
       });
   };
   makePurchase = async (bill, store) => {
     let db = this.db;
-    const { products, seller, total, paid, createdAt } = bill;
+    const { products, seller, total, cash, transfer, createdAt } = bill;
     let items = {};
     let user = localStorage["username"];
     products.forEach((p, index) => {
@@ -333,8 +335,8 @@ export default class DB {
           seller: seller,
           store: store,
           cashier: user,
-          total: Number.parseInt(total),
-          paid: Number.parseInt(paid),
+          total: parseInt(total),
+          paid: parseInt(cash) + parseInt(transfer),
           createdAt: createdAt,
           type: "purchase",
           items: items,
@@ -342,8 +344,10 @@ export default class DB {
         {
           _id: "withdrawal:" + createdAt,
           type: "withdrawal",
+          seller: seller,
           cashier: user,
-          amount: Number.parseInt(total),
+          cash: parseInt(cash),
+          transfer: parseInt(transfer),
           createdAt: createdAt,
         },
       ])
@@ -373,13 +377,13 @@ export default class DB {
           selector: { type: "seller", name: seller },
           // sort: ["createdAt"],
         }).then(function (result) {
-          console.log(result);
+          // console.log(result);
           let doc = result.docs[0];
           doc.orders = parseInt(doc.orders) + parseInt(total);
-          doc.paid = parseInt(doc.paid) + parseInt(paid);
+          doc.paid = parseInt(doc.paid) + parseInt(cash) + parseInt(transfer);
 
           db.put(doc).then((res) => {
-            console.log(res);
+            // console.log(res);
             // updated
           });
 
@@ -395,7 +399,7 @@ export default class DB {
 
   makeSales = async (bill, store) => {
     let db = this.db;
-    const { products, user, customer, total, paid, createdAt } = bill;
+    const { products, user, customer, total, cash, transfer, createdAt } = bill;
     let items = {};
     products.forEach((p, index) => {
       items = {
@@ -410,7 +414,7 @@ export default class DB {
           customer: customer,
           store: store,
           total: parseInt(total),
-          paid: parseInt(paid),
+          paid: parseInt(cash) + parseInt(transfer),
           user: user,
           createdAt: createdAt,
           type: "sale",
@@ -419,8 +423,10 @@ export default class DB {
         {
           _id: "deposited:" + createdAt,
           type: "deposited",
+          customer: customer,
           cashier: user,
-          amount: parseInt(total),
+          cash: parseInt(cash),
+          transfer: parseInt(transfer),
           createdAt: createdAt,
         },
       ])
@@ -451,7 +457,8 @@ export default class DB {
               // console.log(result);
               let doc = result.docs[0];
               doc.orders = parseInt(doc.orders) + parseInt(total);
-              doc.paid = parseInt(doc.paid) + parseInt(paid);
+              doc.paid =
+                parseInt(doc.paid) + parseInt(cash) + parseInt(transfer);
               if (doc.paid === doc.orders) doc.lastBalance = Date.now();
               db.put(doc).then((res) => {
                 // console.log(res);
@@ -523,15 +530,16 @@ export default class DB {
     };
     let items = [];
 
+    // console.log("selector", selector);
+
     await this.db.createIndex({
       index: { fields: ["type", "createdAt", "store"] },
     });
-    // console.log(from);
     await this.db
       .find({
         selector: {
           type: "sale",
-          createdAt: { $gte: from, $lte: to },
+          // createdAt: { $gt: from, $lt: to },
           store: store,
         },
         // fields: ["_id", "name"],
@@ -539,12 +547,16 @@ export default class DB {
       })
       .then(function (result) {
         result.docs.forEach((s) => {
-          sales.total += parseInt(s.total);
-          sales.paid += parseInt(s.paid);
-          items = items.concat(Object.values(s.items));
+          if (s.createdAt >= from && s.createdAt <= to) {
+            sales.total += parseInt(s.total);
+            sales.paid += parseInt(s.paid);
+            items = items.concat(Object.values(s.items));
+            console.log("from ", from);
+            console.log("this ", s.createdAt);
+            console.log(("to ", to));
+          }
         });
         sales.items = items;
-
         // yo, a result
       })
       .catch(function (err) {
@@ -694,5 +706,52 @@ export default class DB {
     // console.log(orders);
 
     return orders;
+  };
+  getDeposits = async (customer, from, to) => {
+    if (from) from = from.getTime();
+    if (to) to = to.getTime();
+
+    let deposits = {
+      cash: 0,
+      transfer: 0,
+    };
+    let items = [];
+    let selector = {
+      type: "deposit",
+    };
+    if (from && to) {
+      selector["createdAt"] = { $gte: from, $lte: to };
+    }
+    if (customer !== "") {
+      selector["customer"] = customer;
+    }
+    // console.log(selector);
+    await this.db.createIndex({
+      index: { fields: ["type", "createdAt", "customer"] },
+    });
+    //  console.log(from);
+    await this.db
+      .find({
+        selector: selector,
+        // fields: ["_id", "name"],
+        // sort: ["createdAt"],
+      })
+      .then(function (result) {
+        result.docs.forEach((dep) => {
+          deposits.cash += dep.cash;
+          deposits.transfer += dep.transfer;
+          items.push(dep);
+          // console.log(dep);
+        });
+
+        // yo, a result
+      })
+      .catch(function (err) {
+        console.log(err);
+        // ouch, an error
+      });
+    deposits.items = items;
+    // console.log(deposits);
+    return deposits;
   };
 }

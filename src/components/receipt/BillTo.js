@@ -4,11 +4,9 @@ import { convertDate } from "../../util";
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 36,
+    marginTop: 4,
   },
   billTo: {
-    marginTop: 20,
-    paddingBottom: 3,
     fontFamily: "Helvetica-Oblique",
   },
 });
@@ -16,9 +14,9 @@ const styles = StyleSheet.create({
 const BillTo = ({ invoice }) => (
   <View style={styles.headerContainer}>
     <Text>Bill No: {invoice.billNo}</Text>
-    <Text>Customer: {invoice.customer}</Text>
     <Text>Cashier: {invoice.cashier}</Text>
-    <Text>Time: {convertDate(invoice.createdAt)}</Text>
+    <Text>Customer: {invoice.customer}</Text>
+    <Text>Date: {convertDate(invoice.createdAt)}</Text>
   </View>
 );
 

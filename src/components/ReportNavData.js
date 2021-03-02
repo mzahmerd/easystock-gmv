@@ -10,32 +10,38 @@ export const ReportNavData = (isAdmin) => {
           title: "Sales",
           path: "/Report",
           icon: <FaIcons.FaShoppingCart />,
-          cName: "nav-text",
+          cName: "report-nav-text",
         },
         {
           title: "Users",
           path: "/Report",
           icon: <IoIcons.IoMdPersonAdd />,
-          cName: "nav-text",
+          cName: "report-nav-text",
         },
 
         {
           title: "Customers",
           path: "/Report",
           icon: <BsIcons.BsPersonPlusFill />,
-          cName: "nav-text",
+          cName: "report-nav-text",
         },
         {
           title: "Sellers",
           path: "/Report",
           icon: <IoIcons.IoMdPersonAdd />,
-          cName: "nav-text",
+          cName: "report-nav-text",
+        },
+        {
+          title: "Transactions",
+          path: "/Report",
+          icon: <IoIcons.IoMdCash />,
+          cName: "report-nav-text",
         },
         // {
         //   title: "Users",
         //   path: "/Report/Users",
         //   icon: <BsIcons.BsFillPersonLinesFill />,
-        //   cName: "nav-text",
+        //   cName: "report-nav-text",
         // },
       ]
     : [
@@ -43,14 +49,14 @@ export const ReportNavData = (isAdmin) => {
           title: "Users",
           path: "/Report",
           icon: <IoIcons.IoMdPersonAdd />,
-          cName: "nav-text",
+          cName: "report-nav-text",
         },
 
         {
           title: "Customers",
           path: "/Report",
           icon: <BsIcons.BsPersonPlusFill />,
-          cName: "nav-text",
+          cName: "report-nav-text",
         },
       ];
 };

@@ -42,7 +42,7 @@ export const getSidebarData = (isAdmin) => {
           title: "Sellers",
           path: "/Sellers",
           icon: <IoIcons.IoMdPersonAdd />,
-          cName: "nav-text",
+          cName: "nav-text ",
         },
         {
           title: "Users",
@@ -62,7 +62,7 @@ export const getSidebarData = (isAdmin) => {
           title: "Sales",
           path: "/Sales",
           icon: <FaIcons.FaShoppingCart />,
-          cName: "nav-text",
+          cName: "nav-text ",
         },
 
         {
