@@ -25,6 +25,7 @@ function Navbar(props) {
   const handleChangeBillNo = (evt) => setBillNo(evt.target.value);
   const switchStore = () => {
     // console.log(store);
+    localStorage["store"] = store;
     props.changeStore(store);
     handleClose();
   };
@@ -52,6 +53,7 @@ function Navbar(props) {
               id="inlineFormCustomSelectPref"
               custom
               name="store"
+              defaultValue={props.selectedStore}
               onChange={handleChangeStore}
             >
               {stores.map((s) => (

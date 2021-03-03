@@ -10,7 +10,6 @@ import Customers from "./pages/Customers";
 import Sellers from "./pages/Sellers";
 import Users from "./pages/Users";
 import MyInvoice from "./pages/MyInvoice";
-
 import DB from "./db";
 import Login from "./pages/Login";
 
@@ -21,13 +20,11 @@ class App extends Component {
     // but don't put it in state because changing the backend db doesn't require a re-render
     // this.remoteDB = props.remoteDB;
     this.db = new DB("gmv");
-    // this.db.db.info().then(function (info) {
-    //   // console.log(info);
-    // });
+
     this.state = {
       loading: true,
       modalOpen: false,
-      selectedStore: "main",
+      selectedStore: localStorage["store"],
       invoice: {},
       stores: {},
       store: {},
@@ -41,11 +38,13 @@ class App extends Component {
       username: localStorage.getItem("username"),
       isAdmin: this.toBool(localStorage.getItem("isAdmin")),
     };
-    // console.log(localStorage["username"]);
   }
   loadData = async () => {
+    // console.log(localStorage["store"]);
     const stores = await this.db.getStores();
+
     const {
+      // stores,
       store,
       sellers,
       customers,
@@ -53,10 +52,11 @@ class App extends Component {
       sales,
       users,
     } = await this.db.getAllDocs(this.state.selectedStore);
+    // console.log(stores);
+    // console.log(store);
     this.setState({
       stores: stores,
       store: store,
-      // products: store.products,
       customers: customers,
       sellers: sellers,
       purchase: purchase,
@@ -197,15 +197,6 @@ class App extends Component {
     // if (invoice) this.comfirmPrint(invoice);
     // console.log(store);
   };
-  // comfirmPrint = async (invoice) => {
-  //   console.log(this.state.invoice);
-  //   this.setState({
-  //     invoice: invoice,
-  //   });
-  //   console.log(this.state.invoice);
-  //   window.location.href = window.location.href.replace("Sales", "Invoice");
-  //   console.log(this.state.invoice);
-  // };
   getInvoice = async (saleID) => {
     const { invoice } = await this.db.getInvoice(saleID);
     // console.log(invoice);
@@ -224,7 +215,6 @@ class App extends Component {
     //   document.getElementById("invoice")
     // );
   };
-
   logout = () => {
     this.setState({
       isLogin: false,
@@ -273,11 +263,6 @@ class App extends Component {
     }
   };
   login = async (user) => {
-    // await this.db.login(user);
-    // return;
-    // if (await this.db.login(user)) {
-    //   this.loadData();
-    // }
     let exist = await this.state.users[`users:${user.username}`];
     // console.log(user);
     if (exist) {
@@ -285,6 +270,7 @@ class App extends Component {
         localStorage.setItem("isAdmin", !!exist.isAdmin);
         localStorage.setItem("username", exist.username);
         localStorage.setItem("isLogin", true);
+        localStorage["store"] = "main";
 
         this.setState({
           isLogin: true,
@@ -329,7 +315,6 @@ class App extends Component {
     if (this.state.loading) {
       return;
     }
-
     return (
       <Switch>
         <Route
@@ -461,5 +446,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;

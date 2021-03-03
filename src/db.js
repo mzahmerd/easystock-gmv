@@ -59,15 +59,9 @@ export default class DB {
     // console.log(stores.length);
     if (!stores.length) {
       await this.addStore("main").then(async (res) => {
-        // console.log(res);
         await this.getStores().then((s) => (stores = s));
       });
     }
-
-    // allStores.rows.forEach((store) => {
-    //   stores[store.id] = store.doc;
-    // });
-
     return stores;
   };
 
@@ -117,9 +111,6 @@ export default class DB {
       include_docs: true,
       // endkey: store,
     });
-    // let allProducts = await this.db.find({
-    //   selector: { type: "product" },
-    // });
     // let stores = {};
     let sellers = {};
     let customers = {};
@@ -138,6 +129,10 @@ export default class DB {
 
     allDocs.rows.forEach((row) => {
       // console.log(row);
+      // if (row.doc.type === "store") {
+      //   stores[row.id] = row.doc;
+      //   return;
+      // }
       if (row.doc.type === "seller") {
         sellers[row.id] = row.doc;
         return;
