@@ -11,7 +11,13 @@ export default class Login extends Component {
     passcode: "",
     newUser: false,
   };
-
+  hidePassword = (password) => {
+    let text = "";
+    for (let i = 0; i < password.length; i++) {
+      text += "*";
+    }
+    return text;
+  };
   updateUser = (evt) => {
     const { user } = this.state;
     this.setState({
@@ -79,6 +85,7 @@ export default class Login extends Component {
               id="password"
               placeholder="Password"
               name="password"
+              value={this.hidePassword(this.state.user.password)}
               onChange={this.updateUser}
             />
             {this.CodeField()}

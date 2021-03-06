@@ -113,6 +113,7 @@ export default class DB {
     });
     // let stores = {};
     let sellers = {};
+    // let customers = await this.getCustomers();
     let customers = {};
     let products = {};
     let store = {
@@ -176,6 +177,34 @@ export default class DB {
       type: "customer",
     });
     return res;
+  };
+  getCustomers = async () => {
+    await this.db.createIndex({
+      index: { fields: ["type", "name"] },
+    });
+    //  console.log(from);
+    await this.db
+      .find({
+        selector: {
+          type: "customer",
+          $and: [
+            { name: { $gt: null } },
+            { name: { $exists: true } },
+            // works on $regex too
+            // { name: {'$regex': new RegExp('ndo', 'i')} }
+          ],
+        },
+        sort: ["name"],
+      })
+      .then(function (result) {
+        console.log(result);
+        return result.docs;
+        // console.log(s.store);
+      })
+      .catch(function (err) {
+        console.log(err);
+        // ouch, an error
+      });
   };
   addSeller = async (seller) => {
     // console.log(product);
@@ -655,7 +684,6 @@ export default class DB {
 
     return orders;
   };
-
   getSellerOrders = async (seller, from, to) => {
     if (from) from = from.getTime();
     if (to) to = to.getTime();

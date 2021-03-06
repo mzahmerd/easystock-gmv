@@ -9,15 +9,34 @@ export default class Users extends Component {
       username: "",
       password: "",
     },
+    passwordText: "",
   };
 
-  updateUser = (evt) => {
+  updateUsername = (evt) => {
     const { user } = this.state;
     this.setState({
       user: {
         ...user,
-        [evt.target.name]: evt.target.value,
+        username: evt.target.value,
       },
+    });
+    // this.updatePasswordText(user.password.length);
+  };
+  updatePasswordText = (evt) => {
+    const password = evt.target.value;
+    const { user } = this.state;
+    let text = "";
+    for (let i = 0; i < password.length; i++) {
+      text += "*";
+    }
+    this.setState((state, props) => {
+      return {
+        user: {
+          ...user,
+          password: password,
+        },
+        passwordText: text,
+      };
     });
   };
   handleAddUser = () => {
@@ -39,18 +58,23 @@ export default class Users extends Component {
               id="user_name"
               placeholder="User Name"
               name="username"
-              onChange={this.updateUser}
+              value={this.state.user.username}
+              onChange={this.updateUsername}
             />
             <Form.Label htmlFor="password" srOnly>
-              Phone Number
+              Password
             </Form.Label>
-            <Form.Control
-              className="mb-2 mr-sm-2"
-              id="password"
-              placeholder="Password"
-              name="password"
-              onChange={this.updateUser}
-            />
+            <Form.Group>
+              <Form.Control
+                className="mb-2 mr-sm-2"
+                id="password"
+                placeholder="Password"
+                name="password"
+                value={this.state.passwordText}
+                onChange={this.updatePasswordText}
+              />
+            </Form.Group>
+
             <Button
               variant="primary"
               disabled={!(this.state.user.password && this.state.user.username)}
