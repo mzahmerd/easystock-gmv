@@ -59,15 +59,9 @@ export default class DB {
     // console.log(stores.length);
     if (!stores.length) {
       await this.addStore("main").then(async (res) => {
-        // console.log(res);
         await this.getStores().then((s) => (stores = s));
       });
     }
-
-    // allStores.rows.forEach((store) => {
-    //   stores[store.id] = store.doc;
-    // });
-
     return stores;
   };
 
@@ -117,11 +111,9 @@ export default class DB {
       include_docs: true,
       // endkey: store,
     });
-    // let allProducts = await this.db.find({
-    //   selector: { type: "product" },
-    // });
     // let stores = {};
     let sellers = {};
+    // let customers = await this.getCustomers();
     let customers = {};
     let products = {};
     let store = {
@@ -138,6 +130,10 @@ export default class DB {
 
     allDocs.rows.forEach((row) => {
       // console.log(row);
+      // if (row.doc.type === "store") {
+      //   stores[row.id] = row.doc;
+      //   return;
+      // }
       if (row.doc.type === "seller") {
         sellers[row.id] = row.doc;
         return;
@@ -181,6 +177,34 @@ export default class DB {
       type: "customer",
     });
     return res;
+  };
+  getCustomers = async () => {
+    await this.db.createIndex({
+      index: { fields: ["type", "name"] },
+    });
+    //  console.log(from);
+    await this.db
+      .find({
+        selector: {
+          type: "customer",
+          $and: [
+            { name: { $gt: null } },
+            { name: { $exists: true } },
+            // works on $regex too
+            // { name: {'$regex': new RegExp('ndo', 'i')} }
+          ],
+        },
+        sort: ["name"],
+      })
+      .then(function (result) {
+        console.log(result);
+        return result.docs;
+        // console.log(s.store);
+      })
+      .catch(function (err) {
+        console.log(err);
+        // ouch, an error
+      });
   };
   addSeller = async (seller) => {
     // console.log(product);
@@ -660,7 +684,6 @@ export default class DB {
 
     return orders;
   };
-
   getSellerOrders = async (seller, from, to) => {
     if (from) from = from.getTime();
     if (to) to = to.getTime();
