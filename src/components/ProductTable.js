@@ -4,6 +4,9 @@ import { formatMoney } from "../util";
 import { BsTrash } from "react-icons/bs";
 
 function ProductTable(props) {
+  const selectProduct = (evt) => {
+    props.selectProduct(props.tableData[evt.target.id]);
+  };
   return (
     <Table responsive>
       <thead>
@@ -16,7 +19,9 @@ function ProductTable(props) {
       <tbody>
         {props.tableData.map((rows, id) => (
           <tr key={id}>
-            <td>{rows.name}</td>
+            <td id={id} onClick={selectProduct}>
+              {rows.name}
+            </td>
             <td>{rows.qty}</td>
             <td>&#8358; {formatMoney(rows.rate)}</td>
             <td>&#8358; {formatMoney(rows.rate * rows.qty)}</td>
