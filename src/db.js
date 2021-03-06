@@ -113,8 +113,8 @@ export default class DB {
     });
     // let stores = {};
     let sellers = {};
-    let customers = await this.getCustomers();
-    // let customers = {};
+    // let customers = await this.getCustomers();
+    let customers = {};
     let products = {};
     let store = {
       totalRate: 0,
@@ -138,10 +138,10 @@ export default class DB {
         sellers[row.id] = row.doc;
         return;
       }
-      // if (row.doc.type === "customer") {
-      //   customers[row.id] = row.doc;
-      //   return;
-      // }
+      if (row.doc.type === "customer") {
+        customers[row.id] = row.doc;
+        return;
+      }
       if (row.doc.type === "product" && row.doc.store === storename) {
         products[row.id] = row.doc;
         store.totalRate += row.doc.rate * row.doc.qty;

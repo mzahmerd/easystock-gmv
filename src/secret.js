@@ -1,8 +1,8 @@
 const Credentials = {
   // remote_url: "http://localhost:5984/",
-  // remote_url: "http://35.232.34.36:5984/",
   remote_url: "http://admin:gmv@35.232.34.36:5984/",
   // remote_url: "http://username:password@host:port/databasename",
+  // remote_url: "http://35.232.34.36:5984/",
 };
 // Bitnami Creds.
 // Admin user:
