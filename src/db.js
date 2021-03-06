@@ -113,8 +113,8 @@ export default class DB {
     });
     // let stores = {};
     let sellers = {};
-    // let customers = await this.getCustomers();
-    let customers = {};
+    let customers = await this.getCustomers();
+    // let customers = {};
     let products = {};
     let store = {
       totalRate: 0,
@@ -138,10 +138,10 @@ export default class DB {
         sellers[row.id] = row.doc;
         return;
       }
-      if (row.doc.type === "customer") {
-        customers[row.id] = row.doc;
-        return;
-      }
+      // if (row.doc.type === "customer") {
+      //   customers[row.id] = row.doc;
+      //   return;
+      // }
       if (row.doc.type === "product" && row.doc.store === storename) {
         products[row.id] = row.doc;
         store.totalRate += row.doc.rate * row.doc.qty;
@@ -179,6 +179,7 @@ export default class DB {
     return res;
   };
   getCustomers = async () => {
+    let customers = {};
     await this.db.createIndex({
       index: { fields: ["type", "name"] },
     });
@@ -198,13 +199,14 @@ export default class DB {
       })
       .then(function (result) {
         console.log(result);
-        return result.docs;
+        customers = result.docs;
         // console.log(s.store);
       })
       .catch(function (err) {
         console.log(err);
         // ouch, an error
       });
+    return customers;
   };
   addSeller = async (seller) => {
     // console.log(product);

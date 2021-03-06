@@ -111,7 +111,6 @@ export default class Report extends Component {
               as="select"
               className="mb-2 mr-sm-2"
               id="sel_user"
-              custom
               name="user"
               disabled={!this.props.isAdmin}
               value={localStorage["username"]}
@@ -178,13 +177,12 @@ export default class Report extends Component {
       </Row>
     ) : (
       <Row style={{ margin: 20 + "px" }}>
-        <Col className="mb-5 mr-sm-4" bsPrefix>
+        <Col className="mb-5 " bsPrefix>
           <Form>
             <Form.Control
               as="select"
               className="mb-2 mr-sm-2"
               id="sel_user"
-              custom
               name="user"
               disabled={!this.props.isAdmin}
               onChange={updateUser}
@@ -218,21 +216,21 @@ export default class Report extends Component {
             <Form.Label htmlFor="total_sales">Total Sales</Form.Label>
             <Form.Control
               disabled
-              className="mb-2 mr-sm-2"
+              className="mb-2 mr-sm-2 "
               id="total_sales"
               value={formatMoney(this.state.userSales.total)}
             />
             <Form.Label htmlFor="credit">Paid</Form.Label>
             <Form.Control
               disabled
-              className="mb-2 mr-sm-2"
+              className="mb-2 mr-sm-2 "
               id="credit"
               value={formatMoney(this.state.userSales.paid)}
             />
             <Form.Label htmlFor="balance">Balance</Form.Label>
             <Form.Control
               disabled
-              className="mb-2 mr-sm-2"
+              className="mb-2 mr-sm-2 "
               id="balance"
               value={formatMoney(
                 this.state.userSales.total - this.state.userSales.paid
@@ -365,7 +363,6 @@ export default class Report extends Component {
               as="select"
               className="mb-2 mr-sm-2"
               id="sel_customer"
-              custom
               name="customer"
               onChange={updateCustomer}
             >
@@ -461,7 +458,6 @@ export default class Report extends Component {
               as="select"
               className="mb-2 mr-sm-2"
               id="sel_seller"
-              custom
               name="seller"
               onChange={updateSeller}
             >
@@ -565,7 +561,6 @@ export default class Report extends Component {
               as="select"
               className="mb-2 mr-sm-2"
               id="sel_customer"
-              custom
               name="customer"
               onChange={updateCustomer}
             >

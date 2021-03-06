@@ -40,6 +40,7 @@ export default class Users extends Component {
     });
   };
   handleAddUser = () => {
+    // console.log(this.state.user);
     this.props.addUser(this.state.user);
   };
   render() {
@@ -68,9 +69,10 @@ export default class Users extends Component {
               <Form.Control
                 className="mb-2 mr-sm-2"
                 id="password"
+                type="password"
                 placeholder="Password"
                 name="password"
-                value={this.state.passwordText}
+                // value={this.state.passwordText}
                 onChange={this.updatePasswordText}
               />
             </Form.Group>

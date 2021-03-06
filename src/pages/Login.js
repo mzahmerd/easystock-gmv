@@ -11,13 +11,6 @@ export default class Login extends Component {
     passcode: "",
     newUser: false,
   };
-  hidePassword = (password) => {
-    let text = "";
-    for (let i = 0; i < password.length; i++) {
-      text += "*";
-    }
-    return text;
-  };
   updateUser = (evt) => {
     const { user } = this.state;
     this.setState({
@@ -33,6 +26,7 @@ export default class Login extends Component {
     });
   };
   handleLogin = () => {
+    // console.log(this.state.user);
     this.props.login(this.state.user);
   };
   handleRegister = () => {
@@ -83,9 +77,10 @@ export default class Login extends Component {
             <Form.Control
               className="mb-2 mr-sm-2"
               id="password"
+              type="password"
               placeholder="Password"
               name="password"
-              value={this.hidePassword(this.state.user.password)}
+              // value={this.hidePassword(this.state.user.password)}
               onChange={this.updateUser}
             />
             {this.CodeField()}
