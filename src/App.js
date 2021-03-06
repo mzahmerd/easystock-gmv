@@ -99,6 +99,10 @@ class App extends Component {
     });
     this.loadData();
   };
+  updateCustomerName = async (customer) => {
+    await this.db.updateCustomerName(customer);
+    this.loadData();
+  };
   addSeller = async (seller) => {
     const { id } = await this.db.addSeller(seller);
     const { sellers } = this.state;
@@ -109,6 +113,10 @@ class App extends Component {
         [id]: seller,
       },
     });
+    this.loadData();
+  };
+  updateSellerName = async (seller) => {
+    await this.db.updateSellerName(seller);
     this.loadData();
   };
   addUser = async (user) => {
@@ -123,6 +131,11 @@ class App extends Component {
     });
     this.loadData();
   };
+  updateProductName = async (product) => {
+    await this.db.updateProductName(product);
+    this.loadData();
+  };
+
   addProduct = async (product) => {
     const { id } = await this.db.addProduct(product, this.state.selectedStore);
     const { store } = this.state;
@@ -326,6 +339,7 @@ class App extends Component {
               store={this.state.store}
               // stores={Object.values(this.state.stores)}
               addStore={this.addStore}
+              updateProductName={this.updateProductName}
               addProduct={this.addProduct}
               isAdmin={this.state.isAdmin}
             />
@@ -367,6 +381,7 @@ class App extends Component {
               {...props}
               customers={this.state.customers}
               addCustomer={this.addCustomer}
+              updateCustomerName={this.updateCustomerName}
               addDeposit={this.addDeposit}
             />
           )}
@@ -378,6 +393,7 @@ class App extends Component {
               {...props}
               sellers={this.state.sellers}
               addSeller={this.addSeller}
+              updateSellerName={this.updateSellerName}
               addWithdrawal={this.addWithdrawal}
             />
           )}

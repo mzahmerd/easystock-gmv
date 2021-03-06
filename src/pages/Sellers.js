@@ -28,6 +28,15 @@ export default class Sellers extends Component {
   handleAddSeller = () => {
     this.props.addSeller(this.state.seller);
   };
+  handleUpdateSeller = () => {
+    if (this.state.seller._id) {
+      this.props.updateSellerName(this.state.seller);
+    } else {
+      alert(
+        "seller not selected, click on name of the seller you want to update"
+      );
+    }
+  };
   updateCash = (evt) => {
     this.setState({
       cash: evt.target.value,
@@ -41,8 +50,8 @@ export default class Sellers extends Component {
   selectSeller = (id) => {
     this.setState({
       selectedSeller: this.state.sellers[id],
+      seller: this.state.sellers[id],
     });
-    // console.log(this.state.customers[id]);
   };
   handleAddWithdrawl = () => {
     // console.log("customer" + this.state.selectedCustomer);
@@ -67,6 +76,7 @@ export default class Sellers extends Component {
               id="seller_name"
               placeholder="Seller Name"
               name="name"
+              value={this.state.seller.name}
               onChange={this.updateSeller}
             />
             <Form.Label htmlFor="phone_number" srOnly>
@@ -77,6 +87,7 @@ export default class Sellers extends Component {
               id="phone_number"
               placeholder="Phone Number"
               name="phone"
+              value={this.state.seller.phone}
               onChange={this.updateSeller}
             />
             <Button
@@ -86,6 +97,14 @@ export default class Sellers extends Component {
               className="mb-2"
             >
               Add
+            </Button>
+            <Button
+              variant="primary"
+              disabled={!this.state.seller.name}
+              onClick={this.handleUpdateSeller}
+              className="mb-2 ml-2"
+            >
+              Update
             </Button>
           </Form>
           <CustomerTable

@@ -178,6 +178,22 @@ export default class DB {
     });
     return res;
   };
+  updateCustomerName = async (customer) => {
+    await this.db
+      .get(customer._id)
+      .then((doc) => {
+        doc.name = customer.name;
+        doc.phone = customer.phone;
+        return this.db.put(doc);
+      })
+      .then((_) => {
+        return this.db.get(customer._id);
+      })
+      .then((doc) => {
+        // console.log(doc);
+        return doc;
+      });
+  };
   getCustomers = async () => {
     let customers = {};
     await this.db.createIndex({
@@ -217,6 +233,22 @@ export default class DB {
       type: "seller",
     });
     return res;
+  };
+  updateSellerName = async (seller) => {
+    await this.db
+      .get(seller._id)
+      .then((doc) => {
+        doc.name = seller.name;
+        doc.phone = seller.phone;
+        return this.db.put(doc);
+      })
+      .then((_) => {
+        return this.db.get(seller._id);
+      })
+      .then((doc) => {
+        // console.log(doc);
+        return doc;
+      });
   };
   addUser = async (user) => {
     // console.log(product);
@@ -269,7 +301,21 @@ export default class DB {
     });
     return res;
   };
-
+  updateProductName = async (product) => {
+    await this.db
+      .get(product.id)
+      .then((doc) => {
+        doc.name = product.name;
+        return this.db.put(doc);
+      })
+      .then((_) => {
+        return this.db.get(product.id);
+      })
+      .then((doc) => {
+        console.log(doc);
+        return doc;
+      });
+  };
   updateProduct = async (product) => {
     await this.db
       .get(product._id)

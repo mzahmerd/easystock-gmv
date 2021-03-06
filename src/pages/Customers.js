@@ -28,6 +28,15 @@ export default class Customers extends Component {
   handleAddCustomer = () => {
     this.props.addCustomer(this.state.customer);
   };
+  handleUpdateCustomer = () => {
+    if (this.state.customer._id) {
+      this.props.updateCustomerName(this.state.customer);
+    } else {
+      alert(
+        "customer not selected, click on name of the customer you want to update"
+      );
+    }
+  };
   updateCash = (evt) => {
     this.setState({
       cash: evt.target.value,
@@ -41,6 +50,7 @@ export default class Customers extends Component {
   selectCustomer = (id) => {
     this.setState({
       selectedCustomer: this.state.customers[id],
+      customer: this.state.customers[id],
     });
     // console.log(this.state.customers[id]);
   };
@@ -67,6 +77,7 @@ export default class Customers extends Component {
               id="customer_name"
               placeholder="Customer Name"
               name="name"
+              value={this.state.customer.name}
               onChange={this.updateCustomer}
             />
             <Form.Label htmlFor="phone_number" srOnly>
@@ -77,6 +88,7 @@ export default class Customers extends Component {
               id="phone_number"
               placeholder="Phone Number"
               name="phone"
+              value={this.state.customer.phone}
               onChange={this.updateCustomer}
             />
             <Button
@@ -86,6 +98,14 @@ export default class Customers extends Component {
               className="mb-2"
             >
               Add
+            </Button>
+            <Button
+              variant="primary"
+              disabled={!this.state.customer.name}
+              onClick={this.handleUpdateCustomer}
+              className="ml-2 mb-2"
+            >
+              Update
             </Button>
           </Form>
           <CustomerTable

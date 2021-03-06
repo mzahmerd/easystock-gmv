@@ -18,6 +18,13 @@ class Store extends Component {
     store: "",
   };
 
+  selectProduct = (newproduct) => {
+    const { product } = this.state;
+    this.setState({
+      product: { ...product, name: newproduct.name, id: newproduct._id },
+    });
+    // console.log(product);
+  };
   updateProductDetals = (evt) => {
     const { product } = this.state;
     this.setState({
@@ -30,6 +37,15 @@ class Store extends Component {
   };
   handleAdd = () => {
     this.props.addProduct(this.state.product);
+  };
+  handleUpdate = () => {
+    if (this.state.product.id) {
+      this.props.updateProductName(this.state.product);
+    } else {
+      alert(
+        "product not selected, click on name of the product you want to update"
+      );
+    }
   };
   handleAddStore = () => {
     this.props.addStore(this.state.store);
@@ -75,7 +91,7 @@ class Store extends Component {
                 Product Name
               </Form.Label>
               <Form.Control
-                className=" align-content-end mb-2 mr-sm-2"
+                className=" align-content-end ml-2 mb-2 mr-sm-2"
                 id="product_name"
                 value={this.state.product.name}
                 name="name"
@@ -89,9 +105,20 @@ class Store extends Component {
               >
                 Add Product
               </Button>
+              <Button
+                onClick={this.handleUpdate}
+                disabled={!this.state.product.name}
+                className="mb-2 ml-2"
+              >
+                Update Product
+              </Button>
             </Form>
           ) : null}
-          <ProductTable headers={headers} tableData={products}></ProductTable>
+          <ProductTable
+            headers={headers}
+            tableData={products}
+            selectProduct={this.selectProduct}
+          ></ProductTable>
           <Form inline>
             <Form.Label htmlFor="total_rate">Total Rate</Form.Label>
             <Form.Control
