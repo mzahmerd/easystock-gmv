@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
-import { IoIosAdd } from "react-icons/io";
-import { FaEye } from "react-icons/fa";
 
 function UserTable(props) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState("");
 
-  const changePasswordVisibility = () => {
-    setShow(!show);
+  const changePasswordVisibility = (evt) => {
+    setShow(evt.target.id !== show ? evt.target.id : "");
   };
   const hidePassword = (password) => {
     let text = "";
@@ -28,10 +26,13 @@ function UserTable(props) {
       <tbody>
         {props.tableData.map((rows) => (
           <tr key={rows._id}>
-            <td>{rows.username}</td>
+            <td id={rows.username} onClick={changePasswordVisibility}>
+              {rows.username}
+            </td>
             <td>
-              {show ? rows.password : hidePassword(rows.password)}
-              <FaEye onClick={changePasswordVisibility} />
+              {show === rows.username
+                ? rows.password
+                : hidePassword(rows.password)}
             </td>
           </tr>
         ))}
