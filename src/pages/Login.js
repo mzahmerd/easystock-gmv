@@ -26,7 +26,6 @@ export default class Login extends Component {
     });
   };
   handleLogin = () => {
-    // console.log(this.state.user);
     this.props.login(this.state.user);
   };
   handleRegister = () => {
