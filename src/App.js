@@ -160,6 +160,11 @@ class App extends Component {
     });
     this.loadData();
   };
+  returnItem = async (item, qty) => {
+    // console.log(item, qty);
+    await this.db.returnItem(item, qty);
+    this.loadData();
+  };
   getSalesByDate = async (from, to) => {
     const sales = await this.db.getSalesByDate(
       from.getTime(),
@@ -351,7 +356,7 @@ class App extends Component {
           component={(props) => (
             <Sales
               {...props}
-              customers={this.state.customers}
+              customers={this.state.customers.items}
               stores={this.stores}
               store={this.state.store}
               loadData={this.loadData}
@@ -367,7 +372,7 @@ class App extends Component {
           component={(props) => (
             <Purchase
               {...props}
-              sellers={this.state.sellers}
+              sellers={this.state.sellers.items}
               stores={this.stores}
               products={this.state.store.products}
               makePurchase={this.makePurchase}
@@ -403,8 +408,8 @@ class App extends Component {
           component={(props) => (
             <Report
               {...props}
-              sellers={this.state.sellers}
-              customers={this.state.customers}
+              sellers={this.state.sellers.items}
+              customers={this.state.customers.items}
               users={this.state.users}
               sales={this.state.sales}
               purchase={this.state.purchase}
@@ -413,6 +418,7 @@ class App extends Component {
               getSellerOrders={this.getSellerOrders}
               getSalesByDate={this.getSalesByDate}
               getDeposits={this.getDeposits}
+              returnItem={this.returnItem}
               isAdmin={this.state.isAdmin}
             />
           )}

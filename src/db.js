@@ -112,9 +112,15 @@ export default class DB {
       // endkey: store,
     });
     // let stores = {};
-    let sellers = {};
+    let sellerItems = {};
+    let sellers = {
+      totalCredit: 0,
+    };
+    let customerItems = {};
     // let customers = await this.getCustomers();
-    let customers = {};
+    let customers = {
+      totalCredit: 0,
+    };
     let products = {};
     let store = {
       totalRate: 0,
@@ -135,11 +141,13 @@ export default class DB {
       //   return;
       // }
       if (row.doc.type === "seller") {
-        sellers[row.id] = row.doc;
+        sellerItems[row.id] = row.doc;
+        sellers.totalCredit += row.doc.orders - row.doc.paid;
         return;
       }
       if (row.doc.type === "customer") {
-        customers[row.id] = row.doc;
+        customerItems[row.id] = row.doc;
+        customers.totalCredit += row.doc.orders - row.doc.paid;
         return;
       }
       if (row.doc.type === "product" && row.doc.store === storename) {
@@ -165,6 +173,8 @@ export default class DB {
     });
     sales.items = items;
     store.products = products;
+    customers.items = customerItems;
+    sellers.items = sellerItems;
     // console.log(items);
     return { store, sellers, customers, purchase, sales, users };
   };
@@ -332,6 +342,70 @@ export default class DB {
       .then((doc) => {
         // console.log(doc);
         return doc;
+      });
+  };
+  returnItem = async (item, qty) => {
+    let db = this.db;
+    let amount = item.price * qty;
+    let customer = "";
+    let product = "";
+    let store = "";
+    // console.log(item);
+    await this.db
+      .get("sales:" + item.createdAt)
+      .then((doc) => {
+        let items = Object.values(doc.items);
+        customer = doc.customer;
+        store = doc.store;
+        items.forEach((i, n) => {
+          if (i.product === item.product) {
+            i.qty -= qty;
+            items[n] = i;
+            product = i.product;
+          }
+        });
+        doc.items = items;
+        doc.total -= amount;
+        doc.paid -= amount;
+        // console.log(doc);
+        // return;
+        return this.db.put(doc).then(() => {
+          return db
+            .find({
+              selector: { type: "customer", name: customer },
+              // sort: ["createdAt"],
+            })
+            .then(function (result) {
+              // console.log(result);
+              let doc = result.docs[0];
+              doc.orders -= amount;
+              doc.paid -= amount;
+              db.put(doc).then((res) => {
+                // console.log(res);
+                // updated
+                db.createIndex({
+                  index: { fields: ["type", "store", "name"] },
+                }).then((res) => {
+                  // console.log(res);
+                  db.find({
+                    selector: { type: "product", store: store, name: product },
+                    // sort: ["createdAt"],
+                  }).then(function (result) {
+                    let doc = result.docs[0];
+                    doc.qty = parseInt(doc.qty) + parseInt(qty);
+                    db.put(doc).then((res) => {
+                      return true;
+                    });
+                    // yo, a result
+                  });
+                });
+              });
+              // yo, a result
+            });
+        });
+      })
+      .then((_) => {
+        // console.log("sale updated");
       });
   };
   addDeposit = async (cash, transfer, customer) => {
@@ -714,7 +788,9 @@ export default class DB {
         result.docs.forEach((s) => {
           orders.total += parseInt(s.total);
           orders.paid += parseInt(s.paid);
-          s.items[0].createdAt = s.createdAt;
+          for (let i = 0; i < s.items.length; i++) {
+            s.items[i].createdAt = s.createdAt;
+          }
           s.items[0].store = s.store;
           items = items.concat(Object.values(s.items));
           // console.log(s.store);

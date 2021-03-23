@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Button, Form, Container, Row } from "react-bootstrap";
 import CustomerTable from "../components/CustomerTable";
+import { formatMoney } from "../util";
 
 export default class Customers extends Component {
   state = {
-    customers: this.props.customers,
+    customers: this.props.customers.items,
     customer: {
       name: "",
       phone: "",
@@ -110,10 +111,20 @@ export default class Customers extends Component {
           </Form>
           <CustomerTable
             headers={this.headers}
-            tableData={Object.values(this.props.customers)}
+            tableData={Object.values(this.props.customers.items)}
             selectCustomer={this.selectCustomer}
           ></CustomerTable>
           <div>
+            <Form inline>
+              <Form.Label htmlFor="total_credit">Total Credit</Form.Label>
+              <Form.Control
+                disabled
+                className="mb-2 mr-sm-2"
+                id="total_credit"
+                // name="store"
+                value={formatMoney(this.props.customers.totalCredit)}
+              />
+            </Form>
             <Form inline>
               <Form.Label>{this.state.selectedCustomer.name}</Form.Label>
               <br />

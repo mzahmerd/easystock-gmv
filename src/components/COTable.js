@@ -5,10 +5,15 @@ import { formatMoney, convertDate } from "../util";
 function COTable(props) {
   // console.log(props.tableData);
   const renderContent = () => {
+    const handleSelectItem = (evt) => {
+      props.selectItem(evt.target.id);
+    };
     return props.tableData.map((rows, id) => (
       <tr key={id}>
         {/* <td>{rows.createdAt}</td> */}
-        <td> {rows.product}</td>
+        <td id={id} onClick={handleSelectItem}>
+          {rows.product}
+        </td>
         <td> {rows.qty}</td>
         <td>&#8358; {formatMoney(rows.price)}</td>
         <td>&#8358; {formatMoney(rows.qty * rows.price)}</td>
