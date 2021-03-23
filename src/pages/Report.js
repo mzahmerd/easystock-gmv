@@ -27,6 +27,8 @@ export default class Report extends Component {
       : Object.values(this.props.users)[0].username,
     userSales: { items: {}, total: 0, paid: 0 },
     deposits: { items: {}, cash: 0, transfer: 0 },
+    return: 0,
+    selectedItem: {},
   };
 
   switchReport = (report) => {
@@ -339,6 +341,25 @@ export default class Report extends Component {
         customer: evt.target.value,
       });
     };
+    const updateReturn = (evt) => {
+      this.setState({
+        return: evt.target.value,
+      });
+    };
+    const handleUpdateReturn = async () => {
+      // const {returnQty, selectedItem} = this.state
+      // console.log(this.state.selectedItem);
+      this.props.returnItem(this.state.selectedItem, this.state.return);
+      // item.qty = item.qty - returned;
+      // console.log(item);
+    };
+    const selectItem = async (id) => {
+      let item = this.state.customerOrders.items[id];
+      this.setState({
+        return: item.qty,
+        selectedItem: item,
+      });
+    };
     const handleOrderFilter = async () => {
       const { items, total, paid } = await this.props.getCustomerOrders(
         this.state.customer,
@@ -416,11 +437,27 @@ export default class Report extends Component {
               )}
             />
           </Form>
+          <Form inline className="mt-4">
+            <Button
+              disabled={!this.state.return}
+              className="float-right"
+              onClick={handleUpdateReturn}
+            >
+              Return
+            </Button>
+            <Form.Control
+              className="ml-sm-2"
+              id="return"
+              onChange={updateReturn}
+              value={this.state.return}
+            />
+          </Form>
         </Col>
         <Col className="mb-4 mr-sm-2">
           <COTable
             type="co"
             headers={headers}
+            selectItem={selectItem}
             tableData={Object.values(this.state.customerOrders.items)}
           />
         </Col>
