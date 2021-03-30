@@ -32,7 +32,7 @@ function Navbar(props) {
   const printInvoice = () => {
     localStorage["saleID"] = billNo;
     // console.log(window.location.host + "/Invoice");
-    window.location.href = "http://" + window.location.host + "/Invoice";
+    window.location.href = "https://" + window.location.host + "/Invoice";
   };
 
   const logout = () => {
